@@ -1,78 +1,87 @@
 # PySnake
 
-# Description du projet
+# Description
 
-Ce projet est un jeu de snake inspiré du snake de google https://www.google.com/fbx?fbx=snake_arcade.
-Il est conçu à la fois pour être scalable et performant.
+This project is a snake game inspired by Google's snake game : https://www.google.com/fbx?fbx=snake_arcade.
+It is designed to be both scalable and high performance.
 
-# Prérequis
-- Python: version 3.13 recommandée et pip installés
-- IDE: Pycharm ou alternative supportant python
-- Package manager: pip
-- OS: Windows
-- Virtualisation: environnement virtuel (.venv)
+## Getting Started
+
+# Prerequisites
+- Python: version 3.13 recommended et pip installed
+- IDE: Pycharm ou alternative that support python
+- Virtualization: virtual environment (.venv)
 
 # Librairies
-- Pygame
+- Pygame: 2.6.1
 
-# Outil utilisé
+# Tool used
 - IDE: Pycharm 2025.2.1.1
 
-# Déploiement/Lancement
+## Deployment
 
 1.
-**cloner le dépôt**
+**clone the repository**
 ``` bash
     git clone https://github.com/MouldiAchouri/PySnakeTPI.git
 ```
 
 2.
-**Création et activation de l'environnement virtuel**
+**Creation and activation of the virtual environment**
 ```bash
     python -m venv .venv
 ```
+# Windows
 ```bash
     .\.venv\Scripts\activate
 ```
 
+# Linux/Mac
+```bash
+    source .venv/bin/activate
+```
+
 3.
-**Installation des dépendances**
+**Installation of dependencies**
 ```bash
     pip install -r requirements.txt
 ```
+4.
+**Launch the game**
+```bash
+    python main.py
+```
 
-# Arborescence du projet
-
-Le projet est structuré pour séparer la logique de jeu, la configuration et le rendu :
+# Directory structure
 
 ```text
 ├── config/
-│   └── constants.py       # Variables de configuration et constantes
+│   └── constants.py       # Configuration variables and constants
 ├── game/
-│   ├── __init__.py        # Traite game/ comme un package python. Cela permet d'importer des modules
-│   ├── apple.py           # Logique de la pomme
-│   ├── engine.py          # Logique des mouvements et collisions
-│   └── render.py          # Gestion de l'affichage
-├── main.py                # Lancement du jeu
-├── requirements.txt       # Dépendances du projet
+│   ├── __init__.py        # Treat game/ as a Python package. This allows modules to be imported
+│   ├── apple.py           # apple logic
+│   ├── engine.py          # movements and collisions logic
+│   ├── render.py          # Display management
+│   └── snake.py           # Snake logic
+├── main.py                # Launch the game
+├── requirements.txt       # Dépendancies of project
 └── README.md
 ```
 
 # Collaboration
 
-Utilisez les issues pour les discussion et les Pull Requests pour
-soumettre des changements
+Use issues for discussions and pull requests to submit changes.
 
-# Comment commit 
-Le projet suit la convention ** Conventional Commits **
+# How to commit
+This project follows this convention : **Conventional Commits**
 URL: https://www.conventionalcommits.org/en/v1.0.0/
 
-# Comment utiliser ton workflow
-
-# License
+# How to use your workflow
+Each new feature must be developed on a branch named feature/name_of_the_feature
+Branches are merged into develop after validation
 
 # Contact 
 
-Pour toute question, contactez moi via :
+If you have any questions, please contact me by:
 - Email : mouldi.achouri@eduvaud.ch
 - Issue : sur le dépôt Github
