@@ -1,8 +1,13 @@
 import pygame
+import os
+from dotenv import load_dotenv
 
-WIDTH, HEIGHT = 600, 600
-CELL_SIZE = 30
-FPS = 60
+load_dotenv()
+
+WIDTH = int(os.getenv('WIDTH'))
+HEIGHT = int(os.getenv('HEIGHT'))
+FPS= int(os.getenv('FPS'))
+CELL_SIZE = int(os.getenv('CELL_SIZE'))
 
 COLOR_BG = (173, 255, 47)
 COLOR_GRID = (154, 232, 49)

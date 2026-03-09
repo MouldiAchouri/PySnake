@@ -1,27 +1,54 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
+skinparam style strictuml
+skinparam monochrome true
+skinparam shadowing false
 
-List <|-- AbstractList
-Collection <|-- AbstractCollection
-
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-
-class ArrayList {
-Object[] elementData
-size()
+class Game {
+    - screen: Surface
+    - clock: Clock
+    - snake: Snake
+    - apple: Apple
+    - render: Render
+    - direction_lock: boolean
+    - move_delay: int
+    - last_move: int
+    + run()
+    - _handle_events()
+    - _change_direction(key: int)
+    - _update()
 }
 
-enum TimeUnit {
-DAYS
-HOURS
-MINUTES
+class Snake {
+    + segments: List[List[int]]
+    + direction: int
+    + score: int
+    + __int__()
+    + reset()
+    + get_next_head_position(): [List[int]
+    + move(new_head: List[int], growing: boolean)
+    + check_collision(head: List[int]): boolean
 }
 
+class Apple {
+    + position: List[int]
+    + __init__()
+    + spawn(snake_segments: List[List[int]])
+}
+
+class Render {
+    - screen: Surface
+    - font: Font
+    + __init__(screen: Surface)
+    + draw(snake: Snake, apple: Apple)
+    - _draw_grid()
+    - _draw_apple(apple: Apple)
+    - _draw_snake(snake: Snake)
+    - _draw_score(score: int)
+}
+
+Game *-- Snake
+Game *-- Apple
+Game *-- Render
 @enduml
