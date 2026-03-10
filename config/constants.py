@@ -1,5 +1,7 @@
 import pygame
 import os
+
+from arcade.experimental.pygame_interaction import PygameInteraction
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -19,3 +21,10 @@ UP = pygame.K_UP
 DOWN = pygame.K_DOWN
 LEFT = pygame.K_LEFT
 RIGHT = pygame.K_RIGHT
+
+MENU_TOGGLE = pygame.K_SPACE
+MENU_UP = pygame.K_UP
+MENU_DOWN = pygame.K_DOWN
+MENU_LEFT = pygame.K_LEFT
+MENU_RIGHT = pygame.K_RIGHT
+MENU_EXIT = pygame.K_ESCAPE

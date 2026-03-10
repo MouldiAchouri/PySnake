@@ -1,6 +1,6 @@
 import sys
 from config.constants import *
-from game import Snake, Apple, Render
+from game import Snake, Apple, Render, Menu
 
 
 class Game:
@@ -12,17 +12,22 @@ class Game:
         self.snake = Snake()
         self.apple = Apple()
         self.apple.spawn(self.snake.segments)
+        self.menu = Menu()
         self.render = Render(self.screen)
 
         self.direction_lock = False
         self.move_delay = 150
         self.last_move = pygame.time.get_ticks()
 
+
     def run(self):
         while True:
             self._handle_events()
             self._update()
             self.render.draw(self.snake, self.apple)
+            if self.menu.active:
+                self.render.draw_menu(self.menu)
+            pygame.display.flip()
             self.clock.tick(FPS)
 
     def _handle_events(self):
@@ -30,8 +35,24 @@ class Game:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.KEYDOWN and not self.direction_lock:
-                self._change_direction(event.key)
+
+            if event.type == pygame.KEYDOWN:
+
+                if event.key == MENU_TOGGLE:
+                    if not self.menu.active:
+                        self.menu.pause()
+                    else:
+                        result= self.menu.handle_input(event)
+                        if result == "RESET":
+                            self.reset_game()
+
+                elif self.menu.active:
+                    result = self.menu.handle_input(event)
+                    if result == "RESET":
+                        self.reset_game()
+
+                elif not self.direction_lock:
+                    self._change_direction(event.key)
 
     def _change_direction(self, key):
         if key == UP and self.snake.direction != DOWN:
@@ -48,6 +69,11 @@ class Game:
             self.direction_lock = True
 
     def _update(self):
+        self.menu.update()
+
+        if self.menu.active:
+            return
+
         now = pygame.time.get_ticks()
         if now - self.last_move > self.move_delay:
             self.direction_lock = False
@@ -67,3 +93,10 @@ class Game:
                 self.snake.move(new_head, growing=False)
 
             self.last_move = now
+
+    def reset_game(self):
+        self.snake.reset()
+        self.apple.spawn(self.snake.segments)
+        self.move_delay = 150
+        self.menu.active = False
+        self.menu.countdown = False

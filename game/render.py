@@ -11,7 +11,6 @@ class Render:
         self._draw_apple(apple)
         self._draw_snake(snake)
         self._draw_score(snake.score)
-        pygame.display.flip()
 
     def _draw_grid(self):
         for y in range(0, HEIGHT, CELL_SIZE):
@@ -31,3 +30,26 @@ class Render:
     def _draw_score(self, score):
         text = self.font.render(f"Score: {score}", True, (255, 255, 255))
         self.screen.blit(text, (10, 10))
+
+    def draw_menu(self, menu):
+        # 1. Le fond noir transparent
+        menu.overlay.set_alpha(180)
+        self.screen.blit(menu.overlay, (0, 0))
+
+        if menu.countdown:
+            # Affiche UNIQUEMENT le gros chiffre du décompte
+            self._draw_text(str(menu.timer), WIDTH // 2, HEIGHT // 2, size=100, color=(255, 255, 0))
+        else:
+            # Affiche UNIQUEMENT la liste des options
+            for i, text in enumerate(menu.options):
+                is_selected = (i == menu.selected_index)
+                color = (255, 215, 0) if is_selected else (255, 255, 255)
+                y_pos = HEIGHT // 2 - 60 + (i * 50)
+                self._draw_text(text, WIDTH // 2, y_pos, color=color, bold=is_selected)
+
+    def _draw_text(self, text, x, y, color=(255, 255, 255), bold=False, size=36):
+        font = pygame.font.SysFont("Arial", size, bold=bold)
+        img = font.render(text, True, color)
+        rect = img.get_rect(center=(x, y))
+        self.screen.blit(img, rect)
+
