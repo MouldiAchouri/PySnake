@@ -109,13 +109,9 @@ class Game:
         is_full = self.screen.get_flags() & pygame.FULLSCREEN
 
         if not is_full:
-            # Passage en plein écran
             self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED | pygame.FULLSCREEN)
         else:
-            # Retour en fenêtre : on force d'abord une fenêtre simple (flag 0)
-            # pour casser le verrouillage du driver vidéo
             pygame.display.set_mode((WIDTH, HEIGHT))
-            # Puis on remet ta configuration propre
             self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED | pygame.RESIZABLE)
 
         self.render.screen = self.screen
