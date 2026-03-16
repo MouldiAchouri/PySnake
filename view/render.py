@@ -3,6 +3,8 @@ from config.constants import *
 class Render:
     def __init__(self, screen):
         self.screen = screen
+        self.font_bold = pygame.font.Font(None, 64)
+        self.font_standard = pygame.font.Font(None, 32)
         self.font = pygame.font.SysFont("Arial", 24, bold=True)
 
     def draw(self, snake, apple):
@@ -51,4 +53,3 @@ class Render:
         img = font.render(text, True, color)
         rect = img.get_rect(center=(x, y))
         self.screen.blit(img, rect)
-
