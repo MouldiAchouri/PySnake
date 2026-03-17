@@ -13,9 +13,14 @@ It is designed to be both scalable and high performance.
 - Virtualization: virtual environment (.venv)
 
 
-**upgrade pip**
+**upgrade pip for Linux and MacOS**
 ``` bash
 python -m ensurepip --upgrade
+```
+
+**upgrade pip for Windows**
+``` bash
+py -m ensurepip --upgrade
 ```
 
 # Librairies
