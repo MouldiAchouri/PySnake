@@ -1,54 +1,86 @@
 @startuml
-'https://plantuml.com/class-diagram
-
 skinparam style strictuml
 skinparam monochrome true
 skinparam shadowing false
+hide empty members
+
+enum GameState {
+    PLAYING
+    MENU
+    LOSE
+    WIN
+}
+
+enum Direction {
+    UP
+    DOWN
+    LEFT
+    RIGHT
+}
 
 class Game {
-    - screen: Surface
-    - clock: Clock
-    - snake: Snake
-    - apple: Apple
-    - render: Render
-    - direction_lock: boolean
-    - move_delay: int
-    - last_move: int
-    + run()
-    - _handle_events()
-    - _change_direction(key: int)
-    - _update()
+    - directionLock: Boolean
+    - moveDelay: Integer
+    - lastMoveTime: Long
+    - state: GameState
+    + run(): void
+    - handleEvents(): void
+    - changeDirection(key: KeyCode): void
+    - update(): void
+    - draw(): void
+    - toggleFullscreen(): void
+    - resetGame(): void
 }
 
 class Snake {
-    + segments: List[List[int]]
-    + direction: int
-    + score: int
-    + __int__()
-    + reset()
-    + get_next_head_position(): [List[int]
-    + move(new_head: List[int], growing: boolean)
-    + check_collision(head: List[int]): boolean
+    + segments: Point[]
+    + direction: Direction
+    + score: Integer
+    + reset(): void
+    + getNextHeadPosition(): Point
+    + move(newHead: Point, isGrowing: Boolean): void
+    + checkCollision(head: Point): Boolean
 }
 
 class Apple {
-    + position: List[int]
-    + __init__()
-    + spawn(snake_segments: List[List[int]])
+    + position: Point
+    + spawn(occupiedCells: Point[]): void
 }
 
 class Render {
-    - screen: Surface
-    - font: Font
-    + __init__(screen: Surface)
-    + draw(snake: Snake, apple: Apple)
-    - _draw_grid()
-    - _draw_apple(apple: Apple)
-    - _draw_snake(snake: Snake)
-    - _draw_score(score: int)
+    + draw(snake: Snake, apple: Apple): void
+    + drawMenu(menu: Menu): void
+    - drawGrid(): void
+    - drawApple(apple: Apple): void
+    - drawSnake(snake: Snake): void
+    - drawScore(score: Integer): void
 }
 
-Game *-- Snake
-Game *-- Apple
-Game *-- Render
+class Menu {
+    + active: Boolean
+    + countdown: Boolean
+    - selectedIndex: Integer
+    - options: String[]
+    + update(): void
+    + handleInput(event: Event): String
+    + pause(): void
+    - executeOption(): String
+}
+
+class StateRender {
+    - options: String[]
+    - selectedIndex: Integer
+    + drawOverlay(state: GameState, score: Integer): void
+    - drawCenteredText(text: String, offset: Integer): void
+}
+
+Game *-- Snake : manages >
+Game *-- Apple : manages >
+Game *-- Render : delegates rendering >
+Game *-- Menu : controls >
+Game *-- StateRender : handles UI >
+
+Render ..> Snake : uses
+Render ..> Apple : uses
+StateRender ..> GameState : references
 @enduml
