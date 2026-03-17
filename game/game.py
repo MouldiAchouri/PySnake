@@ -38,41 +38,40 @@ class Game:
     def _handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                self._terminate()
 
             if event.type == pygame.KEYDOWN:
-
                 if self.state in [STATE_LOSE, STATE_WIN]:
-                    if event.key in [MENU_UP, pygame.K_UP]:
-                        self.state_render.selected_index = (self.state_render.selected_index - 1) % len(
-                            self.state_render.options)
-                    elif event.key in [MENU_DOWN, pygame.K_DOWN]:
-                        self.state_render.selected_index = (self.state_render.selected_index + 1) % len(
-                            self.state_render.options)
-                    elif event.key == MENU_TOGGLE:
-                        if self.state_render.selected_index == 0:
-                            self.reset_game()
-                        else:
-                            pygame.quit()
-                            sys.exit()
-                    return
+                    self._handle_overlay_input(event.key)
 
-                if self.menu.active:
+                elif self.menu.active:
+                    result = self.menu.handle_input(event)
+                    if result == "RESET":
+                        self.reset_game()
+                    elif result == "TOGGLE_FS":
+                        self._toggle_fullscreen()
+
+                else:
                     if event.key == MENU_TOGGLE:
-                        result = self.menu.handle_input(event)
-                        if result == "RESET": self.reset_game()
-                        elif result == "TOGGLE_FS": self._toggle_fullscreen()
-                    else:
-                        result = self.menu.handle_input(event)
-                        if result == "RESET": self.reset_game()
-                        elif result == "TOGGLE_FS": self._toggle_fullscreen()
-                    return
+                        self.menu.pause()
+                    elif not self.direction_lock:
+                        self._change_direction(event.key)
 
-                if event.key == MENU_TOGGLE:
-                    self.menu.pause()
-                elif not self.direction_lock:
-                    self._change_direction(event.key)
+    def _handle_overlay_input(self, key):
+        if key in [UP, MENU_UP]:
+            self.state_render.selected_index = (self.state_render.selected_index - 1) % 2
+        elif key in [DOWN, MENU_DOWN]:
+            self.state_render.selected_index = (self.state_render.selected_index + 1) % 2
+        elif key == MENU_TOGGLE:
+            if self.state_render.selected_index == 0:
+                self.reset_game()
+            else:
+                self._terminate()
+
+    @staticmethod
+    def _terminate():
+        pygame.quit()
+        sys.exit()
 
     def _change_direction(self, key):
         if key == UP and self.snake.direction != DOWN:

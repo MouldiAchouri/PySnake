@@ -20,12 +20,11 @@ class Menu:
     @property
     def current_options(self):
         if self.confirm_quit:
-            return ["Annuler", "Quitter Definitivement"]
-        elif self.in_options:
+            return [TXT_CANCEL, TXT_CONFIRM_QUIT]
+        if self.in_options:
             is_full = pygame.display.get_surface().get_flags() & pygame.FULLSCREEN
-            fs_text = "Mode fenetre" if is_full else "Plein Ecran"
-            return [fs_text, "Retour"]
-        return self.main_options
+            return [TXT_WINDOWED if is_full else TXT_FULLSCREEN, TXT_BACK]
+        return [TXT_RESUME, TXT_RESTART, TXT_OPTIONS, TXT_QUIT]
 
     def start_countdown(self):
         self.countdown = True
@@ -39,31 +38,27 @@ class Menu:
         selection = self.current_options[self.selected_index]
 
         if self.confirm_quit:
-            if selection == "Quitter Definitivement":
+            if selection == TXT_CONFIRM_QUIT:
                 pygame.quit()
                 sys.exit()
-            else:
-                self.confirm_quit = False
-                self.selected_index = 3
+            self.confirm_quit = False
+            self.selected_index = 3
             return None
 
-        if not self.in_options:
-            if selection == "Reprendre":
-                self.start_countdown()
-            elif selection == "Recommencer":
-                return "RESET"
-            elif selection == "Option":
-                self.in_options = True
-                self.selected_index = 0
-            elif selection == "Quitter":
-                self.confirm_quit = True
-                self.selected_index = 0
-        else:
-            if self.selected_index == 0:
-                return "TOGGLE_FS"
-            elif selection == "Retour":
-                self.in_options = False
-                self.selected_index = 2
+        if self.in_options:
+            if self.selected_index == 0: return "TOGGLE_FS"
+            self.in_options = False
+            self.selected_index = 2
+            return None
+
+        if selection == TXT_RESUME: self.start_countdown()
+        elif selection == TXT_RESTART: return "RESET"
+        elif selection == TXT_OPTIONS:
+            self.in_options = True
+            self.selected_index = 0
+        elif selection == TXT_QUIT:
+            self.confirm_quit = True
+            self.selected_index = 0
         return None
 
     def handle_input(self, event):

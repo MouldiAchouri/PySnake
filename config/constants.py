@@ -31,3 +31,13 @@ STATE_MENU = 0
 STATE_PLAYING = 1
 STATE_LOSE = 2
 STATE_WIN = 3
+
+TXT_RESUME = "Reprendre"
+TXT_RESTART = "Recommencer"
+TXT_OPTIONS = "Options"
+TXT_QUIT = "Quitter"
+TXT_FULLSCREEN = "Plein Écran"
+TXT_WINDOWED = "Mode Fenêtré"
+TXT_BACK = "Retour"
+TXT_CANCEL = "Annuler"
+TXT_CONFIRM_QUIT = "Quitter le jeu"
