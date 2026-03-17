@@ -12,44 +12,51 @@ It is designed to be both scalable and high performance.
 - IDE: Pycharm ou alternative that support python
 - Virtualization: virtual environment (.venv)
 
+
+**upgrade pip**
+``` bash
+python -m ensurepip --upgrade
+```
+
 # Librairies
 - Pygame: 2.6.1
 
 # Tool used
 - IDE: Pycharm 2025.2.1.1
 
+
 ## Deployment
 
 1.
 **clone the repository**
 ``` bash
-    git clone https://github.com/MouldiAchouri/PySnakeTPI.git
+git clone https://github.com/MouldiAchouri/PySnakeTPI.git
 ```
 
 2.
 **Creation and activation of the virtual environment**
 ```bash
-    python -m venv .venv
+python -m venv .venv
 ```
 # Windows
 ```bash
-    .\.venv\Scripts\activate
+.\.venv\Scripts\activate
 ```
 
 # Linux/Mac
 ```bash
-    source .venv/bin/activate
+source .venv/bin/activate
 ```
 
 3.
 **Installation of dependencies**
 ```bash
-    pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 4.
 **Launch the game**
 ```bash
-    python main.py
+python main.py
 ```
 
 # Directory structure

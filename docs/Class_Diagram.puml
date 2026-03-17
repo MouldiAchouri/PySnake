@@ -2,6 +2,7 @@
 skinparam style strictuml
 skinparam monochrome true
 skinparam shadowing false
+skinparam classAttributeIconSize 0
 hide empty members
 
 enum GameState {
