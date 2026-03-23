@@ -3,9 +3,9 @@ from config.constants import *
 class Render:
     def __init__(self, screen):
         self.screen = screen
-        self.font_bold = pygame.font.Font(None, 64)
-        self.font_standard = pygame.font.Font(None, 32)
-        self.font = pygame.font.SysFont("Arial", 24, bold=True)
+        self.font_bold = pygame.font.Font(None, 128)
+        self.font_standard = pygame.font.Font(None, 64)
+        self.font_score = pygame.font.SysFont("Arial", 48, bold=True)
 
     def draw(self, snake, apple):
         self.screen.fill(COLOR_BG)
@@ -21,32 +21,33 @@ class Render:
                     pygame.draw.rect(self.screen, COLOR_GRID, (x, y, CELL_SIZE, CELL_SIZE))
 
     def _draw_apple(self, apple):
-        pos = apple.position
-        pygame.draw.rect(self.screen, COLOR_APPLE, (pos[0] + 2, pos[1] + 2, CELL_SIZE - 4, CELL_SIZE - 4))
+        x, y = apple.position
+        pygame.draw.rect(self.screen, COLOR_APPLE, (x + 4, y + 4, CELL_SIZE - 8, CELL_SIZE - 8))
 
     def _draw_snake(self, snake):
         for i, seg in enumerate(snake.segments):
             color = COLOR_SNAKE_HEAD if i == 0 else COLOR_SNAKE_BODY
-            pygame.draw.rect(self.screen, color, (seg[0] + 1, seg[1] + 1, CELL_SIZE - 2, CELL_SIZE - 2))
+            x, y = seg
+            pygame.draw.rect(self.screen, color, (x + 2, y + 2, CELL_SIZE - 4, CELL_SIZE - 4))
 
     def _draw_score(self, score):
-        text = self.font.render(f"Score: {score}", True, (255, 255, 255))
-        self.screen.blit(text, (10, 10))
-
+        text = self.font_score.render(f"Score: {score}", True, (255, 255, 255))
+        self.screen.blit(text, (30, 30))
 
     def draw_menu(self, menu):
-        menu.overlay.set_alpha(180)
-        self.screen.blit(menu.overlay, (0, 0))
+        overlay = pygame.Surface((WIDTH, HEIGHT))
+        overlay.fill((0, 0, 0))
+        overlay.set_alpha(180)
+        self.screen.blit(overlay, (0, 0))
 
         if menu.countdown:
-            self._draw_text(str(menu.timer), WIDTH // 2, HEIGHT // 2, size=100, color=(255, 255, 0))
+            self._draw_text(str(menu.timer), WIDTH // 2, HEIGHT // 2, size=250, color=(255, 255, 0))
         else:
             for i, text in enumerate(menu.current_options):
                 is_selected = (i == menu.selected_index)
                 color = (255, 215, 0) if is_selected else (255, 255, 255)
-                y_pos = HEIGHT // 2 - 60 + (i * 50)
-                self._draw_text(text, WIDTH // 2, y_pos, color=color, bold=is_selected)
-
+                y_pos = HEIGHT // 2 - 150 + (i * 100)
+                self._draw_text(text, WIDTH // 2, y_pos, color=color, bold=is_selected, size=80)
 
     def _draw_text(self, text, x, y, color=(255, 255, 255), bold=False, size=36):
         font = pygame.font.SysFont("Arial", size, bold=bold)

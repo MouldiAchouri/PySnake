@@ -3,13 +3,16 @@ from config.constants import *
 from game import Snake, Apple, Menu
 from view.render import Render
 from view.state_render import StateRender
+from view.window_manager import WindowManager
 import score_manager
 
 
 class Game:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED | pygame.RESIZABLE)
+        self.wm = WindowManager()
+        self.screen = self.wm.screen
+
         self.clock = pygame.time.Clock()
         self.start_time = pygame.time.get_ticks()
         self.score_saved = False
@@ -18,10 +21,10 @@ class Game:
         self.apple = Apple()
         self.apple.spawn(self.snake.segments)
         self.menu = Menu()
-        self.render = Render(self.screen)
 
+        self.render = Render(self.wm.virtual_surface)
         self.state_render = StateRender(
-            self.screen,
+            self.wm.virtual_surface,
             self.render.font_bold,
             self.render.font_standard
         )
@@ -52,11 +55,12 @@ class Game:
                     if result == "RESET":
                         self.reset_game()
                     elif result == "TOGGLE_FS":
-                        self._toggle_fullscreen()
+                        self.wm.toggle_fullscreen()
 
                 else:
                     if event.key == MENU_TOGGLE:
                         self.menu.pause()
+                        self.wm.toggle_resizable(True)
                     elif not self.direction_lock:
                         self._change_direction(event.key)
 
@@ -93,6 +97,11 @@ class Game:
     def _update(self):
         self.menu.update()
 
+        if self.menu.countdown or (not self.menu.active and self.state == STATE_PLAYING):
+            self.wm.toggle_resizable(False)
+        else:
+            self.wm.toggle_resizable(True)
+
         if self.menu.active or self.state in [STATE_LOSE, STATE_WIN]:
             return
 
@@ -101,23 +110,18 @@ class Game:
             self.direction_lock = False
             new_head = self.snake.get_next_head_position()
 
+            # Collision mur ou corps
             if self.snake.check_collision(new_head):
-                self.state = STATE_LOSE
-                self.state_render.selected_index = 0
-                elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000
-                score_manager.add_new_score("Mouldi", len(self.snake.segments), elapsed_time, "LOSE")
-                self.score_saved = True
+                self._handle_game_over(STATE_LOSE)
                 return
 
+            # Victoire (Grille pleine)
             max_cells = (WIDTH // CELL_SIZE) * (HEIGHT // CELL_SIZE)
             if len(self.snake.segments) >= max_cells:
-                self.state = STATE_WIN
-                self.state_render.selected_index = 0
-                elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000
-                score_manager.add_new_score("Mouldi", len(self.snake.segments), elapsed_time, "WIN")
-                self.score_saved = True
+                self._handle_game_over(STATE_WIN)
                 return
 
+            # Logique de mouvement et nourriture
             if new_head == self.apple.position:
                 self.snake.move(new_head, growing=True)
                 self.apple.spawn(self.snake.segments)
@@ -126,6 +130,16 @@ class Game:
                 self.snake.move(new_head, growing=False)
 
             self.last_move = now
+
+    def _handle_game_over(self, result_state):
+        self.state = result_state
+        self.state_render.selected_index = 0
+        elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000
+
+        score_manager.add_new_score("Ahmet", self.snake.score, elapsed_time, result_state)
+        self.score_saved = True
+
+        self.wm.toggle_resizable(True)
 
     def reset_game(self):
         self.snake.reset()
@@ -145,13 +159,4 @@ class Game:
         elif self.state in [STATE_LOSE, STATE_WIN]:
             self.state_render.draw_overlay(self.state, self.snake.score)
 
-        pygame.display.flip()
-
-    def _toggle_fullscreen(self):
-        try:
-            pygame.display.toggle_fullscreen()
-            self.menu.overlay = pygame.Surface((WIDTH, HEIGHT))
-            self.menu.overlay.fill((0, 0, 0))
-            pygame.event.clear()
-        except pygame.error:
-            print("erreur")
+        self.wm.final_render()
