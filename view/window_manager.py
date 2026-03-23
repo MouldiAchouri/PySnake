@@ -24,7 +24,7 @@ class WindowManager:
         self.is_fullscreen = False
 
         self.screen = pygame.display.set_mode((self.win_size, self.win_size), pygame.RESIZABLE)
-        pygame.display.set_caption('Snake Pro - TPI')
+        pygame.display.set_caption('Snake')
 
     def toggle_resizable(self, can_resize):
         if self.is_fullscreen: return

@@ -135,7 +135,7 @@ class Game:
         self.state_render.selected_index = 0
         elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000
 
-        score_manager.add_new_score("Ahmet", self.snake.score, elapsed_time, result_state)
+        score_manager.add_new_score("Mouldi", self.snake.score, elapsed_time, result_state)
         self.score_saved = True
         self.wm.toggle_resizable(True)
 
