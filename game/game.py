@@ -3,6 +3,7 @@ from config.constants import *
 from game import Snake, Apple, Menu
 from view.render import Render
 from view.state_render import StateRender
+import score_manager
 
 
 class Game:
@@ -10,6 +11,8 @@ class Game:
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED | pygame.RESIZABLE)
         self.clock = pygame.time.Clock()
+        self.start_time = pygame.time.get_ticks()
+        self.score_saved = False
 
         self.snake = Snake()
         self.apple = Apple()
@@ -101,12 +104,18 @@ class Game:
             if self.snake.check_collision(new_head):
                 self.state = STATE_LOSE
                 self.state_render.selected_index = 0
+                elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000
+                score_manager.add_new_score("Mouldi", len(self.snake.segments), elapsed_time, "LOSE")
+                self.score_saved = True
                 return
 
             max_cells = (WIDTH // CELL_SIZE) * (HEIGHT // CELL_SIZE)
             if len(self.snake.segments) >= max_cells:
                 self.state = STATE_WIN
                 self.state_render.selected_index = 0
+                elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000
+                score_manager.add_new_score("Mouldi", len(self.snake.segments), elapsed_time, "WIN")
+                self.score_saved = True
                 return
 
             if new_head == self.apple.position:
@@ -125,6 +134,8 @@ class Game:
         self.state = STATE_PLAYING
         self.menu.active = False
         self.menu.countdown = False
+        self.start_time = pygame.time.get_ticks()
+        self.score_saved = False
 
     def _draw(self):
         self.render.draw(self.snake, self.apple)
