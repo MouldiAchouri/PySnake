@@ -2,11 +2,11 @@ import json
 import os
 from datetime import datetime
 
-DATA_PATH = "Data/scores.json"
+DATA_PATH = "data/scores.json"
 
 def ensure_data_exists():
-    if not os.path.exists("Data"):
-        os.makedirs("Data")
+    if not os.path.exists("data"):
+        os.makedirs("data")
     if not os.path.exists(DATA_PATH):
         with open(DATA_PATH, "w") as f:
             json.dump([], f)

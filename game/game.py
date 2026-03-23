@@ -1,4 +1,5 @@
 import sys
+import pygame  # N'oublie pas l'import de pygame ici !
 from config.constants import *
 from game import Snake, Apple, Menu
 from view.render import Render
@@ -23,11 +24,8 @@ class Game:
         self.menu = Menu()
 
         self.render = Render(self.wm.virtual_surface)
-        self.state_render = StateRender(
-            self.wm.virtual_surface,
-            self.render.font_bold,
-            self.render.font_standard
-        )
+
+        self.state_render = StateRender(self.wm.virtual_surface)
 
         self.state = STATE_PLAYING
         self.direction_lock = False
@@ -45,6 +43,10 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self._terminate()
+
+            if event.type == pygame.VIDEORESIZE:
+                if not self.wm.is_fullscreen:
+                    self.wm.screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
 
             if event.type == pygame.KEYDOWN:
                 if self.state in [STATE_LOSE, STATE_WIN]:
@@ -110,18 +112,15 @@ class Game:
             self.direction_lock = False
             new_head = self.snake.get_next_head_position()
 
-            # Collision mur ou corps
             if self.snake.check_collision(new_head):
                 self._handle_game_over(STATE_LOSE)
                 return
 
-            # Victoire (Grille pleine)
             max_cells = (WIDTH // CELL_SIZE) * (HEIGHT // CELL_SIZE)
             if len(self.snake.segments) >= max_cells:
                 self._handle_game_over(STATE_WIN)
                 return
 
-            # Logique de mouvement et nourriture
             if new_head == self.apple.position:
                 self.snake.move(new_head, growing=True)
                 self.apple.spawn(self.snake.segments)
@@ -138,7 +137,6 @@ class Game:
 
         score_manager.add_new_score("Ahmet", self.snake.score, elapsed_time, result_state)
         self.score_saved = True
-
         self.wm.toggle_resizable(True)
 
     def reset_game(self):
