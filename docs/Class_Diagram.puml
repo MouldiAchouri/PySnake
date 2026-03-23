@@ -5,83 +5,110 @@ skinparam shadowing false
 skinparam classAttributeIconSize 0
 hide empty members
 
+' --- Data & Logic ---
+package "Config & Data" {
+    class score_manager << (M,orchid) >> {
+        + ensure_data_exists(): void
+        + load_scores(): List
+        + add_new_score(user, score, time, state): List
+    }
+}
+
 enum GameState {
-    PLAYING
-    MENU
-    LOSE
-    WIN
+    STATE_MENU
+    STATE_PLAYING
+    STATE_LOSE
+    STATE_WIN
 }
 
-enum Direction {
-    UP
-    DOWN
-    LEFT
-    RIGHT
-}
-
+' --- Core Classes ---
 class Game {
-    - directionLock: Boolean
-    - moveDelay: Integer
-    - lastMoveTime: Long
     - state: GameState
+    - direction_lock: Boolean
+    - move_delay: Integer
+    - last_move: Long
+    - start_time: Long
+    - score_saved: Boolean
     + run(): void
-    - handleEvents(): void
-    - changeDirection(key: KeyCode): void
-    - update(): void
-    - draw(): void
-    - toggleFullscreen(): void
-    - resetGame(): void
+    - _handle_events(): void
+    - _update(): void
+    - _draw(): void
+    - _handle_game_over(result_state): void
+    + reset_game(): void
 }
 
 class Snake {
-    + segments: Point[]
+    + segments: List<Point>
     + direction: Direction
     + score: Integer
     + reset(): void
-    + getNextHeadPosition(): Point
-    + move(newHead: Point, isGrowing: Boolean): void
-    + checkCollision(head: Point): Boolean
+    + get_next_head_position(): Point
+    + move(new_head: Point, growing: Boolean): void
+    + check_collision(head: Point): Boolean
 }
 
 class Apple {
     + position: Point
-    + spawn(occupiedCells: Point[]): void
-}
-
-class Render {
-    + draw(snake: Snake, apple: Apple): void
-    + drawMenu(menu: Menu): void
-    - drawGrid(): void
-    - drawApple(apple: Apple): void
-    - drawSnake(snake: Snake): void
-    - drawScore(score: Integer): void
+    + spawn(snake_segments: List): void
 }
 
 class Menu {
     + active: Boolean
     + countdown: Boolean
-    - selectedIndex: Integer
-    - options: String[]
+    + timer: Integer
+    - selected_index: Integer
+    + current_options: List <property>
     + update(): void
-    + handleInput(event: Event): String
+    + handle_input(event: Event): String
     + pause(): void
-    - executeOption(): String
+    + start_countdown(): void
+    - execute_option(): String
+}
+
+' --- View & Window Management ---
+class WindowManager {
+    + logical_res: Point
+    + virtual_surface: Surface
+    + screen: Surface
+    + monitor_w: Integer
+    + monitor_h: Integer
+    + win_size: Integer
+    + is_fullscreen: Boolean
+    + toggle_fullscreen(): void
+    + toggle_resizable(can_resize: Boolean): void
+    + final_render(): void
+}
+
+class Render {
+    - ratio_title: Float
+    - ratio_standard: Float
+    - ratio_score: Float
+    + draw(snake: Snake, apple: Apple): void
+    + draw_menu(menu: Menu): void
+    - _get_font(ratio: Float): Font
+    - _draw_grid(): void
+    - _draw_score(score: Integer): void
 }
 
 class StateRender {
-    - options: String[]
-    - selectedIndex: Integer
-    + drawOverlay(state: GameState, score: Integer): void
-    - drawCenteredText(text: String, offset: Integer): void
+    - selected_index: Integer
+    + draw_overlay(state: GameState, score: Integer): void
+    - _get_font(ratio: Float): Font
+    - _draw_highscore_table(): void
 }
 
-Game *-- Snake : manages >
-Game *-- Apple : manages >
-Game *-- Render : delegates rendering >
-Game *-- Menu : controls >
-Game *-- StateRender : handles UI >
+' --- Relationships (Ownership & Dependencies) ---
+Game  *-- Snake : owns >
+Game  *--  Apple : owns >
+Game  *--  Menu : owns >
+Game  *--  WindowManager : owns >
+Game  *--  Render : owns >
+Game  *--  StateRender : owns >
 
-Render ..> Snake : uses
-Render ..> Apple : uses
-StateRender ..> GameState : references
+Game ..> score_manager : calls >
+StateRender ..> score_manager : calls >
+
+Render ..> WindowManager : draws on virtual_surface >
+StateRender ..> WindowManager : draws on virtual_surface >
+
 @enduml
