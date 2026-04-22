@@ -1,0 +1,114 @@
+@startuml
+skinparam style strictuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide empty members
+
+' --- Data & Logic ---
+package "Config & Data" {
+    class score_manager << (M,orchid) >> {
+        + ensure_data_exists(): void
+        + load_scores(): List
+        + add_new_score(user, score, time, state): List
+    }
+}
+
+enum GameState {
+    STATE_MENU
+    STATE_PLAYING
+    STATE_LOSE
+    STATE_WIN
+}
+
+' --- Core Classes ---
+class Game {
+    - state: GameState
+    - direction_lock: Boolean
+    - move_delay: Integer
+    - last_move: Long
+    - start_time: Long
+    - score_saved: Boolean
+    + run(): void
+    - _handle_events(): void
+    - _update(): void
+    - _draw(): void
+    - _handle_game_over(result_state): void
+    + reset_game(): void
+}
+
+class Snake {
+    + segments: List<Point>
+    + direction: Direction
+    + score: Integer
+    + reset(): void
+    + get_next_head_position(): Point
+    + move(new_head: Point, growing: Boolean): void
+    + check_collision(head: Point): Boolean
+}
+
+class Apple {
+    + position: Point
+    + spawn(snake_segments: List): void
+}
+
+class Menu {
+    + active: Boolean
+    + countdown: Boolean
+    + timer: Integer
+    - selected_index: Integer
+    + current_options: List <property>
+    + update(): void
+    + handle_input(event: Event): String
+    + pause(): void
+    + start_countdown(): void
+    - execute_option(): String
+}
+
+' --- View & Window Management ---
+class WindowManager {
+    + logical_res: Point
+    + virtual_surface: Surface
+    + screen: Surface
+    + monitor_w: Integer
+    + monitor_h: Integer
+    + win_size: Integer
+    + is_fullscreen: Boolean
+    + toggle_fullscreen(): void
+    + toggle_resizable(can_resize: Boolean): void
+    + final_render(): void
+}
+
+class Render {
+    - ratio_title: Float
+    - ratio_standard: Float
+    - ratio_score: Float
+    + draw(snake: Snake, apple: Apple): void
+    + draw_menu(menu: Menu): void
+    - _get_font(ratio: Float): Font
+    - _draw_grid(): void
+    - _draw_score(score: Integer): void
+}
+
+class StateRender {
+    - selected_index: Integer
+    + draw_overlay(state: GameState, score: Integer): void
+    - _get_font(ratio: Float): Font
+    - _draw_highscore_table(): void
+}
+
+' --- Relationships (Ownership & Dependencies) ---
+Game  *-- Snake : owns >
+Game  *--  Apple : owns >
+Game  *--  Menu : owns >
+Game  *--  WindowManager : owns >
+Game  *--  Render : owns >
+Game  *--  StateRender : owns >
+
+Game ..> score_manager : calls >
+StateRender ..> score_manager : calls >
+
+Render ..> WindowManager : draws on virtual_surface >
+StateRender ..> WindowManager : draws on virtual_surface >
+
+@enduml

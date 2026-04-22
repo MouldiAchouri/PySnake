@@ -8,9 +8,20 @@ It is designed to be both scalable and high performance.
 ## Getting Started
 
 # Prerequisites
-- Python: version 3.13 recommended et pip installed
+- Python: version 3.13 recommended and latest pip
 - IDE: Pycharm ou alternative that support python
 - Virtualization: virtual environment (.venv)
+
+
+**upgrade pip for Linux and MacOS**
+``` bash
+python -m ensurepip --upgrade
+```
+
+**upgrade pip for Windows**
+``` bash
+py -m ensurepip --upgrade
+```
 
 # Librairies
 - Pygame: 2.6.1
@@ -18,54 +29,62 @@ It is designed to be both scalable and high performance.
 # Tool used
 - IDE: Pycharm 2025.2.1.1
 
+
 ## Deployment
 
 1.
 **clone the repository**
 ``` bash
-    git clone https://github.com/MouldiAchouri/PySnakeTPI.git
+git clone https://github.com/MouldiAchouri/PySnakeTPI.git
+cd PySnake
 ```
 
 2.
 **Creation and activation of the virtual environment**
 ```bash
-    python -m venv .venv
+python -m venv .venv
 ```
 # Windows
 ```bash
-    .\.venv\Scripts\activate
+.\.venv\Scripts\activate
 ```
 
 # Linux/Mac
 ```bash
-    source .venv/bin/activate
+source .venv/bin/activate
 ```
 
 3.
 **Installation of dependencies**
 ```bash
-    pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 4.
 **Launch the game**
 ```bash
-    python main.py
+python main.py
 ```
 
 # Directory structure
 
 ```text
 ├── config/
-│   └── constants.py       # Configuration variables and constants
+│   └── constants.py       
+├── data/
+│   └── scores.json        
 ├── game/
-│   ├── __init__.py        # Treat game/ as a Python package. This allows modules to be imported
-│   ├── apple.py           # apple logic
-│   ├── engine.py          # movements and collisions logic
-│   ├── render.py          # Display management
-│   └── snake.py           # Snake logic
-├── main.py                # Launch the game
-├── requirements.txt       # Dépendancies of project
-└── README.md
+│   ├── apple.py         
+│   ├── game.py          
+│   ├── menu.py            
+│   └── snake.py           
+├── view/
+│   ├── render.py         
+│   ├── state_render.py   
+│   └── window_manager.py  
+├── score_manager.py      
+├── main.py               
+├── .env                  
+└── requirements.txt
 ```
 
 # Collaboration
