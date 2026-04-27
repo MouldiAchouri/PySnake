@@ -5,110 +5,130 @@ skinparam shadowing false
 skinparam classAttributeIconSize 0
 hide empty members
 
-' --- Data & Logic ---
+title Snake - UML Diagram (Language-Agnostic)
+
 package "Config & Data" {
-    class score_manager << (M,orchid) >> {
-        + ensure_data_exists(): void
-        + load_scores(): List
-        + add_new_score(user, score, time, state): List
+    class ScoreManager <<service>> {
+        + ensureDataExists(): void
+        + loadScores(): Collection
+        + addNewScore(user: String, score: Integer, time: Long, state: GameState): Collection
     }
 }
 
 enum GameState {
-    STATE_MENU
-    STATE_PLAYING
-    STATE_LOSE
-    STATE_WIN
+    MENU
+    PLAYING
+    LOSE
+    WIN
 }
 
-' --- Core Classes ---
 class Game {
     - state: GameState
-    - direction_lock: Boolean
-    - move_delay: Integer
-    - last_move: Long
-    - start_time: Long
-    - score_saved: Boolean
+    - directionLock: Boolean
+    - moveDelayMs: Integer
+    - lastMoveTimestamp: Long
+    - startTimestamp: Long
+    - scoreSaved: Boolean
     + run(): void
-    - _handle_events(): void
-    - _update(): void
-    - _draw(): void
-    - _handle_game_over(result_state): void
-    + reset_game(): void
+    - handleEvents(): void
+    - update(): void
+    - draw(): void
+    - handleGameOver(resultState: GameState): void
+    + resetGame(): void
 }
 
 class Snake {
-    + segments: List<Point>
-    + direction: Direction
-    + score: Integer
+    - segments: Collection
+    - direction: Direction
+    - score: Integer
     + reset(): void
-    + get_next_head_position(): Point
-    + move(new_head: Point, growing: Boolean): void
-    + check_collision(head: Point): Boolean
+    + getNextHeadPosition(): Point
+    + move(newHead: Point, growing: Boolean): void
+    + checkCollision(head: Point): Boolean
 }
 
 class Apple {
-    + position: Point
-    + spawn(snake_segments: List): void
+    - position: Point
+    + spawn(snakeSegments: Collection): void
 }
 
 class Menu {
-    + active: Boolean
-    + countdown: Boolean
-    + timer: Integer
-    - selected_index: Integer
-    + current_options: List <property>
+    - active: Boolean
+    - countdown: Boolean
+    - timer: Integer
+    - selectedIndex: Integer
+    - currentOptions: Collection
     + update(): void
-    + handle_input(event: Event): String
+    + handleInput(event: InputEvent): String
     + pause(): void
-    + start_countdown(): void
-    - execute_option(): String
+    + startCountdown(): void
+    - executeOption(): String
 }
 
-' --- View & Window Management ---
 class WindowManager {
-    + logical_res: Point
-    + virtual_surface: Surface
-    + screen: Surface
-    + monitor_w: Integer
-    + monitor_h: Integer
-    + win_size: Integer
-    + is_fullscreen: Boolean
-    + toggle_fullscreen(): void
-    + toggle_resizable(can_resize: Boolean): void
-    + final_render(): void
+    - logicalResolution: Point
+    - virtualSurface: Surface
+    - screen: Surface
+    - monitorWidth: Integer
+    - monitorHeight: Integer
+    - windowSize: Integer
+    - fullscreen: Boolean
+    + toggleFullscreen(): void
+    + toggleResizable(canResize: Boolean): void
+    + finalRender(): void
 }
 
 class Render {
-    - ratio_title: Float
-    - ratio_standard: Float
-    - ratio_score: Float
+    - titleRatio: Float
+    - standardRatio: Float
+    - scoreRatio: Float
     + draw(snake: Snake, apple: Apple): void
-    + draw_menu(menu: Menu): void
-    - _get_font(ratio: Float): Font
-    - _draw_grid(): void
-    - _draw_score(score: Integer): void
+    + drawMenu(menu: Menu): void
+    - getFont(ratio: Float): Font
+    - drawGrid(): void
+    - drawScore(score: Integer): void
 }
 
 class StateRender {
-    - selected_index: Integer
-    + draw_overlay(state: GameState, score: Integer): void
-    - _get_font(ratio: Float): Font
-    - _draw_highscore_table(): void
+    - selectedIndex: Integer
+    + drawOverlay(state: GameState, score: Integer): void
+    - getFont(ratio: Float): Font
+    - drawHighscoreTable(): void
 }
 
-' --- Relationships (Ownership & Dependencies) ---
-Game  *-- Snake : owns >
-Game  *--  Apple : owns >
-Game  *--  Menu : owns >
-Game  *--  WindowManager : owns >
-Game  *--  Render : owns >
-Game  *--  StateRender : owns >
+' --- Named UML Relationships ---
+Game *-- Snake : composition
+Game *-- Apple : composition
+Game *-- Menu : composition
+Game *-- WindowManager : composition
+Game *-- Render : composition
+Game *-- StateRender : composition
 
-Game ..> score_manager : calls >
-StateRender ..> score_manager : calls >
+Render o-- WindowManager : aggregation
+StateRender --> WindowManager : association
 
-Render ..> WindowManager : draws on virtual_surface >
-StateRender ..> WindowManager : draws on virtual_surface >
+Game ..> ScoreManager : usage
+StateRender ..> ScoreManager : usage
+
+package "pygame Dependency Map (Impact Scope)" {
+    class "<<external>> pygame" as PygameLib
+
+    class "config/constants.py" as FileConstants <<file>>
+    class "game/game.py" as FileGame <<file>>
+    class "game/menu.py" as FileMenu <<file>>
+    class "view/render.py" as FileRender <<file>>
+    class "view/state_render.py" as FileStateRender <<file>>
+    class "view/window_manager.py" as FileWindowManager <<file>>
+
+    FileConstants ..> PygameLib : direct import
+    FileGame ..> PygameLib : direct import
+    FileStateRender ..> PygameLib : direct import
+    FileWindowManager ..> PygameLib : direct import
+
+    FileMenu ..> FileConstants : usage via constants
+    FileRender ..> FileConstants : usage via constants
+    FileMenu ..> PygameLib : indirect dependency
+    FileRender ..> PygameLib : indirect dependency
+}
 
 @enduml
