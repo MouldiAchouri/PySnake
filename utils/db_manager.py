@@ -26,7 +26,6 @@ def init_db():
         user_id INTEGER NOT NULL,
         score_value INTEGER NOT NULL,
         timer REAL NOT NULL,
-        game_state INTEGER NOT NULL,
         date TEXT NOT NULL,
         status_sync INTEGER DEFAULT 0,
         FOREIGN KEY (user_id) REFERENCES user (id)
