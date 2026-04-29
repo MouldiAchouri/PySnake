@@ -1,6 +1,7 @@
 import pygame
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
 load_dotenv()
 
@@ -31,6 +32,7 @@ STATE_MENU = 0
 STATE_PLAYING = 1
 STATE_LOSE = 2
 STATE_WIN = 3
+STATE_AUTH = 4
 
 TXT_RESUME = "Reprendre"
 TXT_RESTART = "Recommencer"
