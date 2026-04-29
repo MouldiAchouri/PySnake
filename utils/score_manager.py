@@ -1,14 +1,14 @@
 import json
-import os
+from pathlib import Path
 from datetime import datetime
 
-DATA_PATH = "data/scores.json"
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_PATH = BASE_DIR / "data" / "scores.json"
 
 def ensure_data_exists():
-    if not os.path.exists("data"):
-        os.makedirs("data")
-    if not os.path.exists(DATA_PATH):
-        with open(DATA_PATH, "w") as f:
+    DATA_PATH.parent.mkdir(parents=True, exist_ok=True)
+    if not DATA_PATH.exists():
+        with open(DATA_PATH, "w", encoding="utf-8") as f:
             json.dump([], f)
 
 def load_scores():
@@ -28,7 +28,8 @@ def add_new_score(username, score, timer, game_state):
         "score": score,
         "timer": timer,
         "game_state": game_state,
-        "date": datetime.now().isoformat()
+        "date": datetime.now().isoformat(),
+        "status_sync": False
     }
 
     scores.append(new_entry)

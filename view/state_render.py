@@ -1,6 +1,6 @@
 import pygame
 from config.constants import WIDTH, HEIGHT, STATE_LOSE
-import score_manager
+from utils import score_manager
 
 
 class StateRender:

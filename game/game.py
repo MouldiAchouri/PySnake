@@ -1,11 +1,10 @@
 import sys
-import pygame  # N'oublie pas l'import de pygame ici !
 from config.constants import *
 from game import Snake, Apple, Menu
 from view.render import Render
 from view.state_render import StateRender
 from view.window_manager import WindowManager
-import score_manager
+from utils import score_manager
 
 
 class Game:
