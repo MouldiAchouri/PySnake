@@ -1,3 +1,5 @@
+import pygame
+
 from config.constants import *
 
 class InputBox:
@@ -10,14 +12,25 @@ class InputBox:
         self.txt_surface = self.font.render(text, True, (255, 255, 255))
         self.active = False
 
+        self.last_backspace_time = 0
+        self.current_backspace_delay = 500
+
     def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.active = not self.active
+            else:
+                self.active = False
+            self.color = (255, 255, 255) if self.active else (100, 100, 100)
         if event.type == pygame.KEYDOWN and self.active:
+            if event.key in [pygame.K_RETURN, pygame.K_TAB]:
+                return
             if event.key == pygame.K_BACKSPACE:
                 self.text = self.text[:-1]
                 self.last_backspace_time = pygame.time.get_ticks()
                 self.current_backspace_delay = 500
             elif event.key == pygame.K_RETURN:
-                self.active = False
+                pass
             elif event.key == pygame.K_TAB:
                 pass
             else:

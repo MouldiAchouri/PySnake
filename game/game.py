@@ -69,25 +69,35 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self._fix_mouse_pos(event)
                     mx, my = event.pos
-
                     switch_rect = pygame.Rect(WIDTH // 2 - 150, int(HEIGHT * 0.9), 300, 40)
-
                     if switch_rect.collidepoint(mx, my):
                         self.auth_mode = "REGISTER" if self.auth_mode == "LOGIN" else "LOGIN"
                         for box in self.inputs.values(): box.text = ""
 
-                for box in self.inputs.values():
-                    box.handle_event(event)
-
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_TAB:
-                        keys = list(self.inputs.keys())
-                        for i, key in enumerate(keys):
-                            if self.inputs[key].active:
-                                self.inputs[key].active = False
-                                next_key = keys[(i + 1) % len(keys)]
-                                self.inputs[next_key].active = True
+                        order = ["user", "pass", "conf"] if self.auth_mode == "REGISTER" else ["user", "pass"]
+
+                        idx = -1
+                        for i, name in enumerate(order):
+                            if self.inputs[name].active:
+                                idx = i
                                 break
+
+                        for box in self.inputs.values(): box.active = False
+
+                        next_name = order[(idx + 1) % len(order)]
+                        self.inputs[next_name].active = True
+                        continue
+
+                    if event.key == pygame.K_RETURN:
+                        self._attempt_auth()
+                        continue
+
+                for name, box in self.inputs.items():
+                    if name == "conf" and self.auth_mode == "LOGIN": continue
+                    box.handle_event(event)
+
                 continue
 
             if event.type == pygame.VIDEORESIZE:
@@ -117,16 +127,17 @@ class Game:
         if self.auth_mode == "REGISTER":
             confirm = self.inputs["conf"].text
             if password == confirm and len(username) > 2 and len(password) > 3:
-                success = register_user(username, password, True)
-                if success:
-                    print(f"Joueur {username} créé")
+                if register_user(username, password, True):
                     self._start_game()
                 else:
-                    print("Pseudo déjà pris")
+                    print("Erreur : Pseudo déjà pris")
         else:
-            if len(username) > 2:
-                print(f"Connexion de {username}...")
+            from utils.db_manager import login_user
+            if login_user(username, password):
+                print(f"Connexion réussie : {username}")
                 self._start_game()
+            else:
+                print("Erreur : Identifiants incorrects")
 
     def _start_game(self):
         """Initialise les timers pour éviter un game over immédiat après l'auth."""

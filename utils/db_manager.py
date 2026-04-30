@@ -53,3 +53,15 @@ def register_user(username, password, sync_enabled):
         if conn:
             conn.close()
 
+def login_user(username, password):
+    conn = None
+    try:
+        conn = sqlite3.connect(str(DB_PATH))
+        cursor = conn.cursor()
+        cursor.execute('SELECT password_hash FROM user WHERE username = ?', (username,))
+        row = cursor.fetchone()
+        if row:
+            return row[0] == hash_password(password)
+        return False
+    finally:
+        if conn: conn.close()
