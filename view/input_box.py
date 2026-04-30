@@ -1,5 +1,3 @@
-import pygame
-
 from config.constants import *
 
 class InputBox:

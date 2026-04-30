@@ -1,12 +1,12 @@
 import sys
+import requests
 from config.constants import *
 from game import Snake, Apple, Menu
 from view.input_box import InputBox
 from view.render import Render
 from view.state_render import StateRender
 from view.window_manager import WindowManager
-from utils import score_manager
-from utils.db_manager import init_db, register_user
+from utils.db_manager import save_score_locally, init_db, register_user, mark_score_as_synced
 
 
 class Game:
@@ -150,6 +150,18 @@ class Game:
             self.state_render.selected_index = (self.state_render.selected_index - 1) % 2
         elif key in [DOWN, MENU_DOWN]:
             self.state_render.selected_index = (self.state_render.selected_index + 1) % 2
+
+        elif key == pygame.K_TAB:
+            self.state_render.show_global = not self.state_render.show_global
+
+            if self.state_render.show_global:
+                print("🌐 Récupération des scores mondiaux...")
+                self.state_render.fetch_global_scores()
+
+        elif key == pygame.K_p:
+            if not self.score_saved_globally:
+                self._publish_to_server()
+
         elif key == MENU_TOGGLE:
             if self.state_render.selected_index == 0:
                 self.reset_game()
@@ -217,10 +229,16 @@ class Game:
     def _handle_game_over(self, result_state):
         self.state = result_state
         self.state_render.selected_index = 0
+        self.score_saved_globally = False
+
         elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000
-        score_manager.add_new_score(self.inputs["user"].text or "Joueur", self.snake.score, elapsed_time, result_state)
+        username = self.inputs["user"].text or "Joueur"
+
+        self.last_score_id = save_score_locally(username, self.snake.score, elapsed_time)
         self.score_saved = True
         self.wm.toggle_resizable(True)
+
+        print(f"Score local enregistré avec l'ID: {self.last_score_id}")
 
     def reset_game(self):
         self.snake.reset()
@@ -242,3 +260,31 @@ class Game:
             self.state_render.draw_overlay(self.state, self.snake.score)
 
         self.wm.final_render()
+    def _publish_to_server(self):
+
+        username = self.inputs["user"].text or "Joueur"
+        score = self.snake.score
+        elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000
+
+        payload = {
+            "username": username,
+            "score_value": score,
+            "timer": round(elapsed_time, 2)
+        }
+
+        try:
+            print(" envoi score au serveur")
+            response = requests.post("http://127.0.0.1:8000/scores", json=payload, timeout=5)
+
+            if response.status_code == 200:
+                print("score enregistré")
+                mark_score_as_synced(self.last_score_id)
+                self.score_saved = True
+                self.score_saved_globally = True
+
+                self.state_render.fetch_global_scores()
+                self.state_render.show_global = True
+            else:
+                print("erreur serveur")
+        except Exception as e:
+            print(f"erreur {e}")
