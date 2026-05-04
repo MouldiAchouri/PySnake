@@ -14,7 +14,7 @@ class StateRender:
 
     def fetch_global_scores(self):
         try:
-            response = requests.get("http://127.0.0.1:8000/leaderboard", timeout=1.5)
+            response = requests.get("https://pysnake-api.onrender.com/leaderboard", timeout=1.5)
             if response.status_code == 200:
                 self.global_scores = response.json()
             else:

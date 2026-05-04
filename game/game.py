@@ -274,7 +274,7 @@ class Game:
 
         try:
             print(" envoi score au serveur")
-            response = requests.post("http://127.0.0.1:8000/scores", json=payload, timeout=5)
+            response = requests.post("https://pysnake-api.onrender.com/scores", json=payload, timeout=5)
 
             if response.status_code == 200:
                 print("score enregistré")
