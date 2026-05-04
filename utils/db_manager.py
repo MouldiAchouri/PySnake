@@ -145,3 +145,22 @@ def update_user_sync_preference(username, enabled):
     ''', (1 if enabled else 0, username))
     conn.commit()
     conn.close()
+
+
+def get_unsynced_scores(username):
+    conn = sqlite3.connect(str(DB_PATH))
+    cursor = conn.cursor()
+    cursor.execute('''
+                   SELECT s.id, s.score_value, s.timer, s.date
+                   FROM score s
+                            JOIN user u ON s.user_id = u.id
+                   WHERE u.username = ?
+                     AND s.status_sync = 0
+                   ''', (username,))
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [
+        {"id": r[0], "score_value": r[1], "timer": r[2], "date": r[3]}
+        for r in rows
+    ]

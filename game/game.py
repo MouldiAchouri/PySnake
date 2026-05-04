@@ -140,6 +140,8 @@ class Game:
             if password == confirm and len(username) > 2 and len(password) > 3:
                 if register_user(username, password, self.sync_enabled):
                     print(f"✅ Joueur créé avec sync: {self.sync_enabled}")
+                    if self.sync_enabled:
+                        self._sync_pending_scores()
                     self._start_game()
                 else:
                     print("Erreur : Pseudo déjà pris")
@@ -151,12 +153,14 @@ class Game:
                 self.sync_enabled = is_sync_enabled(username)
                 print(f"📊 Préférence utilisateur chargée : Online={'ON' if self.sync_enabled else 'OFF'}")
 
+                if self.sync_enabled:
+                    self._sync_pending_scores()
+
                 self._start_game()
             else:
                 print("Erreur : Identifiants incorrects")
 
     def _start_game(self):
-        """Initialise les timers pour éviter un game over immédiat après l'auth."""
         self.state = STATE_PLAYING
         self.start_time = pygame.time.get_ticks()
         self.last_move = pygame.time.get_ticks()
@@ -318,3 +322,32 @@ class Game:
                 print(f"❌ Erreur serveur (Code {response.status_code})")
         except Exception as e:
             print(f"⚠️ Erreur de connexion : {e}")
+
+    def _sync_pending_scores(self):
+        username = self.inputs["user"].text
+        pending_scores = get_unsynced_scores(username)
+
+        if not pending_scores:
+            return
+
+        print(f" {len(pending_scores)} score eb attente de sync")
+
+        for score_data in pending_scores:
+            payload = {
+                "username": username,
+                "score_value": score_data["score_value"],
+                "timer": round(score_data["timer"], 2),
+                "timestamp": score_data["date"]
+            }
+
+            try:
+                response = requests.post("https://pysnake-api.onrender.com/scores", json=payload, timeout=10)
+                if response.status_code == 200:
+                    mark_score_as_synced(score_data["id"])
+                    print(f" Score {score_data['id']} synchro")
+                else:
+                    print(f" Score {score_data['id']} échec")
+                    break
+            except Exception as e:
+                print(f"Erreur réseau")
+                break
