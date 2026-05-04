@@ -49,11 +49,11 @@ async def get_user_scores(username: str):
     conn = sqlite3.connect(DB_PATH, check_same_thread=False)
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT score_value, timer, date FROM global_scores WHERE username = ?"
-                            "ORDER BY score_value DESC", (username,))
+        cursor.execute("SELECT score_value, timer FROM global_scores WHERE username = ? "
+                       "ORDER BY score_value DESC", (username,))
 
         rows = cursor.fetchall()
-        return [{"score_value": r[0], "timer": r[1], "date": r[2]} for r in rows]
+        return [{"score_value": r[0], "timer": r[1]} for r in rows]
     except Exception as e:
         return {"status": "error", "message": str(e)}
     finally:
