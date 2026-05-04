@@ -6,8 +6,7 @@ from view.input_box import InputBox
 from view.render import Render
 from view.state_render import StateRender
 from view.window_manager import WindowManager
-from utils.db_manager import save_score_locally, init_db, register_user, mark_score_as_synced
-
+from utils.db_manager import *
 
 class Game:
     def __init__(self):
@@ -16,6 +15,8 @@ class Game:
 
         self.wm = WindowManager()
         self.screen = self.wm.screen
+
+        self.sync_enabled = True
 
         self.clock = pygame.time.Clock()
         self.start_time = pygame.time.get_ticks()
@@ -69,23 +70,34 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self._fix_mouse_pos(event)
                     mx, my = event.pos
+
                     switch_rect = pygame.Rect(WIDTH // 2 - 150, int(HEIGHT * 0.9), 300, 40)
+
+                    sync_rect = pygame.Rect(WIDTH // 2 - 100, int(HEIGHT * 0.82), 200, 30)
+
                     if switch_rect.collidepoint(mx, my):
                         self.auth_mode = "REGISTER" if self.auth_mode == "LOGIN" else "LOGIN"
                         for box in self.inputs.values(): box.text = ""
 
+                    elif sync_rect.collidepoint(mx, my):
+                        self.sync_enabled = not self.sync_enabled
+                        username = self.inputs["user"].text
+
+                        if self.auth_mode == "LOGIN" and len(username) > 2:
+                            update_user_sync_preference(username, self.sync_enabled)
+                            print(f" préférence sauvegardée : {username}")
+                        else:
+                            print(f"Option Partage de score (local) : {'ON' if self.sync_enabled else 'OFF'}")
+
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_TAB:
                         order = ["user", "pass", "conf"] if self.auth_mode == "REGISTER" else ["user", "pass"]
-
                         idx = -1
                         for i, name in enumerate(order):
                             if self.inputs[name].active:
                                 idx = i
                                 break
-
                         for box in self.inputs.values(): box.active = False
-
                         next_name = order[(idx + 1) % len(order)]
                         self.inputs[next_name].active = True
                         continue
@@ -97,7 +109,6 @@ class Game:
                 for name, box in self.inputs.items():
                     if name == "conf" and self.auth_mode == "LOGIN": continue
                     box.handle_event(event)
-
                 continue
 
             if event.type == pygame.VIDEORESIZE:
@@ -127,14 +138,19 @@ class Game:
         if self.auth_mode == "REGISTER":
             confirm = self.inputs["conf"].text
             if password == confirm and len(username) > 2 and len(password) > 3:
-                if register_user(username, password, True):
+                if register_user(username, password, self.sync_enabled):
+                    print(f"✅ Joueur créé avec sync: {self.sync_enabled}")
                     self._start_game()
                 else:
                     print("Erreur : Pseudo déjà pris")
         else:
-            from utils.db_manager import login_user
+            from utils.db_manager import login_user, is_sync_enabled
             if login_user(username, password):
                 print(f"Connexion réussie : {username}")
+
+                self.sync_enabled = is_sync_enabled(username)
+                print(f"📊 Préférence utilisateur chargée : Online={'ON' if self.sync_enabled else 'OFF'}")
+
                 self._start_game()
             else:
                 print("Erreur : Identifiants incorrects")
@@ -201,6 +217,15 @@ class Game:
             self.wm.toggle_resizable(True)
 
         if self.menu.active or self.state in [STATE_LOSE, STATE_WIN]:
+            if self.state_render.show_global:
+                now = pygame.time.get_ticks()
+                if not hasattr(self, 'last_global_refresh'):
+                    self.last_global_refresh = now
+
+                if now - self.last_global_refresh > 30000:
+                    print("🔄 Actualisation automatique du classement mondial...")
+                    self.state_render.fetch_global_scores()
+                    self.last_global_refresh = now
             return
 
         now = pygame.time.get_ticks()
@@ -251,7 +276,7 @@ class Game:
         self.score_saved = False
 
     def _draw(self):
-        auth_info = {"inputs": self.inputs, "mode": self.auth_mode}
+        auth_info = {"inputs": self.inputs, "mode": self.auth_mode, "sync_enabled": self.sync_enabled}
         self.render.draw(self.snake, self.apple, self.state, auth_info)
 
         if self.menu.active:
@@ -260,9 +285,14 @@ class Game:
             self.state_render.draw_overlay(self.state, self.snake.score)
 
         self.wm.final_render()
-    def _publish_to_server(self):
 
+    def _publish_to_server(self):
         username = self.inputs["user"].text or "Joueur"
+
+        if not  is_sync_enabled(username):
+            print("Publication annulée: l'option online désactivée")
+            return
+
         score = self.snake.score
         elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000
 
@@ -273,11 +303,11 @@ class Game:
         }
 
         try:
-            print(" envoi score au serveur")
-            response = requests.post("https://pysnake-api.onrender.com/scores", json=payload, timeout=5)
+            print("🌐 Envoi du score au serveur Render...")
+            response = requests.post("https://pysnake-api.onrender.com/scores", json=payload, timeout=10)
 
             if response.status_code == 200:
-                print("score enregistré")
+                print("✅ Score enregistré dans PostgreSQL !")
                 mark_score_as_synced(self.last_score_id)
                 self.score_saved = True
                 self.score_saved_globally = True
@@ -285,6 +315,6 @@ class Game:
                 self.state_render.fetch_global_scores()
                 self.state_render.show_global = True
             else:
-                print("erreur serveur")
+                print(f"❌ Erreur serveur (Code {response.status_code})")
         except Exception as e:
-            print(f"erreur {e}")
+            print(f"⚠️ Erreur de connexion : {e}")

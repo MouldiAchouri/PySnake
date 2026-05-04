@@ -29,6 +29,7 @@ class Render:
         if not auth_info: return
         mode = auth_info["mode"]
         inputs = auth_info["inputs"]
+        is_online = auth_info["sync_enabled"]
 
         title_txt = "INSCRIPTION" if mode == "REGISTER" else "CONNEXION"
         self._draw_text_centered(title_txt, WIDTH // 2, HEIGHT * 0.15, self._get_font(self.ratio_title, True),
@@ -43,15 +44,21 @@ class Render:
             label_surf = font_label.render(label_map[name], True, (200, 200, 200))
             self.screen.blit(label_surf, (box.rect.x, box.rect.y - 25))
 
+        sync_rect = pygame.Rect(WIDTH // 2 - 100, int(HEIGHT * 0.82), 200, 30)
+        sync_color = (46, 204, 113) if is_online else (231, 76, 60)
+        pygame.draw.rect(self.screen, sync_color, sync_rect, border_radius=5)
+
+        sync_txt = "Mode Online: ON" if is_online else "Mode Online: OFF"
+        self._draw_text_centered(sync_txt, WIDTH // 2, int(HEIGHT * 0.84), self._get_font(0.025, True), (255, 255, 255))
+
         switch_rect = pygame.Rect(WIDTH // 2 - 150, HEIGHT * 0.9, 300, 40)
         pygame.draw.rect(self.screen, (60, 60, 60), switch_rect, border_radius=10)
 
         switch_txt = "Pas de compte ? S'inscrire" if mode == "LOGIN" else "Déjà un compte ? Se connecter"
         self._draw_text_centered(switch_txt, WIDTH // 2, HEIGHT * 0.925, self._get_font(0.035), (100, 100, 255))
 
-        self._draw_text_centered("Appuyez sur ENTREE pour valider", WIDTH // 2, HEIGHT * 0.82, self._get_font(0.03),
+        self._draw_text_centered("Appuyez sur ENTREE pour valider", WIDTH // 2, HEIGHT * 0.75, self._get_font(0.03),
                                  (150, 150, 150))
-
     def _draw_grid(self):
         for y in range(0, HEIGHT, CELL_SIZE):
             for x in range(0, WIDTH, CELL_SIZE):

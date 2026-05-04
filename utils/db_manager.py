@@ -126,3 +126,22 @@ def login_user(username, password):
         return False
     finally:
         if conn: conn.close()
+
+def is_sync_enabled(username):
+    conn = sqlite3.connect(str(DB_PATH))
+    cursor = conn.cursor()
+    cursor.execute('SELECT online_sync_enabled FROM user WHERE username = ?', (username,))
+    row = cursor.fetchone()
+    conn.close()
+    return row[0] == 1 if row else False
+
+def update_user_sync_preference(username, enabled):
+    conn = sqlite3.connect(str(DB_PATH))
+    cursor = conn.cursor()
+    cursor.execute('''
+        UPDATE user 
+        SET online_sync_enabled = ? 
+        WHERE username = ?
+    ''', (1 if enabled else 0, username))
+    conn.commit()
+    conn.close()
