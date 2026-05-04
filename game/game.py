@@ -83,11 +83,16 @@ class Game:
                         self.sync_enabled = not self.sync_enabled
                         username = self.inputs["user"].text
 
-                        if self.auth_mode == "LOGIN" and len(username) > 2:
+                        if self.state != STATE_AUTH and len(username) > 2:
                             update_user_sync_preference(username, self.sync_enabled)
                             print(f" préférence sauvegardée : {username}")
+
+                            if self.sync_enabled:
+                                self._fetch_remote_history()
+                                self._sync_pending_scores()
                         else:
-                            print(f"Option Partage de score (local) : {'ON' if self.sync_enabled else 'OFF'}")
+                            status = "ON" if self.sync_enabled else "OFF"
+                            print(f"Option Partage de score : {status} (en attente de connexion)")
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_TAB:
@@ -142,19 +147,19 @@ class Game:
                     print(f"✅ Joueur créé avec sync: {self.sync_enabled}")
                     if self.sync_enabled:
                         self._sync_pending_scores()
+                        self._fetch_remote_history()
                     self._start_game()
                 else:
                     print("Erreur : Pseudo déjà pris")
         else:
-            from utils.db_manager import login_user, is_sync_enabled
             if login_user(username, password):
                 print(f"Connexion réussie : {username}")
-
                 self.sync_enabled = is_sync_enabled(username)
                 print(f"📊 Préférence utilisateur chargée : Online={'ON' if self.sync_enabled else 'OFF'}")
 
                 if self.sync_enabled:
                     self._sync_pending_scores()
+                    self._fetch_remote_history()
 
                 self._start_game()
             else:
@@ -325,29 +330,29 @@ class Game:
 
     def _sync_pending_scores(self):
         username = self.inputs["user"].text
-        pending_scores = get_unsynced_scores(username)
+        pending = get_unsynced_scores(username)
+        if not pending: return
 
-        if not pending_scores:
-            return
-
-        print(f" {len(pending_scores)} score eb attente de sync")
-
-        for score_data in pending_scores:
-            payload = {
-                "username": username,
-                "score_value": score_data["score_value"],
-                "timer": round(score_data["timer"], 2),
-                "timestamp": score_data["date"]
-            }
-
+        print(f"🔄 {len(pending)} score(s) en attente de sync")
+        for s in pending:
+            payload = {"username": username, "score_value": s["score_value"], "timer": round(s["timer"], 2)}
             try:
-                response = requests.post("https://pysnake-api.onrender.com/scores", json=payload, timeout=10)
-                if response.status_code == 200:
-                    mark_score_as_synced(score_data["id"])
-                    print(f" Score {score_data['id']} synchro")
-                else:
-                    print(f" Score {score_data['id']} échec")
-                    break
-            except Exception as e:
-                print(f"Erreur réseau")
+                r = requests.post("https://pysnake-api.onrender.com/scores", json=payload, timeout=10)
+                if r.status_code == 200:
+                    mark_score_as_synced(s["id"])
+                    print(f"  Score {s['id']} synchronisé")
+            except:
                 break
+
+    def _fetch_remote_history(self):
+        username = self.inputs["user"].text
+        print(f"🌐 Récupération de l'historique distant pour {username}...")
+        try:
+            r = requests.get(f"https://pysnake-api.onrender.com/scores/{username}", timeout=5)
+            if r.status_code == 200:
+                scores = r.json()
+                for s in scores:
+                    sync_remote_score_local(username, s['score_value'], s['timer'])
+                print(f"✅ {len(scores)} scores synchronisés depuis le cloud.")
+        except Exception as e:
+            print(f"⚠️ Erreur lors de la récupération : {e}")
