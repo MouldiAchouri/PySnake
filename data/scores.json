@@ -1,16 +1,9 @@
 [
     {
-        "username": "Ahmet",
-        "score": 2,
-        "timer": 4.184,
+        "username": "Mouldi",
+        "score": 6,
+        "timer": 17.387,
         "game_state": 2,
-        "date": "2026-03-23T23:04:39.364877"
-    },
-    {
-        "username": "Ahmet",
-        "score": 1,
-        "timer": 5.632,
-        "game_state": 2,
-        "date": "2026-03-23T22:58:14.529287"
+        "date": "2026-05-07T08:50:00.120082"
     }
 ]
