@@ -10,7 +10,7 @@
         },
         "Cookie": {
             "password_hash": "45823eaac0c829b633f393ddf15c042d87fb1f1ce6a7b0a1fd0dc7e4f76126ea",
-            "online_sync_enabled": false
+            "online_sync_enabled": true
         },
         "David": {
             "password_hash": "a6b54c20a7b96eeac1a911e6da3124a560fe6dc042ebf270e3676e7095b95652",
@@ -33,7 +33,7 @@
         },
         "Ahmet": {
             "password_hash": "9b0f9ababae6b494c97f4431d1ea1a6f8bd0700c34e196dd6217c2583df76971",
-            "online_sync_enabled": false
+            "online_sync_enabled": true
         },
         "Antho": {
             "password_hash": "1cec4650a7259cae2c090f57ed3a1189cf4620acba07aed2f41d353cd95adbd0",
@@ -42,57 +42,359 @@
         "Imad": {
             "password_hash": "eb6073f08440af71335b843b5b311e26433d6c75d115e4567b94440cdd21c635",
             "online_sync_enabled": true
+        },
+        "Online": {
+            "password_hash": "0d21bd52022ca7f7e97109d28d327da1e68cc0bedd9713b2dc2b49d3aa104392",
+            "player_uuid": "f09f9acd-40b6-46b9-8932-95a7ccc4f6ce",
+            "online_sync_enabled": false
+        },
+        "Onlinee": {
+            "password_hash": "0a228e32d3ef1f8a9a40cce2b0753b76b64db4fa8b9c8d20d3a8c0de2f204a29",
+            "player_uuid": "2d60b129-8729-4544-8d68-997235f48305",
+            "online_sync_enabled": true
+        },
+        "Gaetan": {
+            "password_hash": "4ce847abc9e120336ecb9bb8b0d1425ef1816dd399a06823bd4b83ab7cc325a5",
+            "player_uuid": "4b35fce5-adf9-4ebe-bce2-b9f413794484",
+            "online_sync_enabled": false
+        },
+        "test": {
+            "password_hash": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+            "player_uuid": "2fcfc32a-1746-4083-bc7c-2b969a750267",
+            "online_sync_enabled": true
+        },
+        "Niels": {
+            "password_hash": "715fc733c5eef228a0046934d1e04bc6bdd37336d9cbe9ed82897e5e06d09740",
+            "player_uuid": "bfbc6943-ea33-406e-9b7a-dc5f91e84714",
+            "online_sync_enabled": false
+        },
+        "gaetan": {
+            "password_hash": "ce5490beb3680ce2b3e0918c7778fadb91d9329d47c1a1feb12d46f795e8498e",
+            "player_uuid": "87e2bb3e-5b8a-4e44-9199-c6603eca5725",
+            "online_sync_enabled": true
+        },
+        "kilian": {
+            "password_hash": "3f00822ab3409980878cf50d4d501352597d77ead2fd288c5b9d958ec4d4ef91",
+            "player_uuid": "4fddcb8f-4688-4e2b-b4d8-aa1d5c1db007",
+            "online_sync_enabled": false
         }
     },
-    "scores": [
+    "next_score_id": 36,
+    "local_scores": [
         {
+            "id": 1,
+            "username": "Ahmet",
+            "timer": 16.54,
+            "date": "2026-05-11T10:37:33.523314",
+            "score": 4,
+            "synced": true,
+            "game_state": 2
+        },
+        {
+            "id": 2,
+            "username": "Ahmet",
+            "timer": 20.08,
+            "date": "2026-05-11T10:37:57.061042",
+            "score": 4,
+            "synced": true,
+            "game_state": 2
+        },
+        {
+            "id": 3,
+            "username": "Ahmet",
+            "timer": 17.2,
+            "date": "2026-05-11T10:38:38.822279",
+            "score": 6,
+            "synced": true,
+            "game_state": 2
+        },
+        {
+            "id": 4,
+            "username": "Ahmet",
+            "timer": 27.2,
+            "date": "2026-05-11T10:39:14.879432",
+            "score": 8,
+            "synced": true,
+            "game_state": 2
+        },
+        {
+            "id": 5,
+            "username": "Onlinee",
+            "timer": 52.32,
+            "date": "2026-05-11T10:54:29.419400",
+            "score": 11,
+            "synced": true,
+            "game_state": 2
+        },
+        {
+            "id": 6,
+            "username": "Onlinee",
+            "timer": 20.85,
+            "date": "2026-05-11T10:55:49.175620",
+            "score": 6,
+            "synced": true,
+            "game_state": 2
+        },
+        {
+            "id": 7,
+            "username": "Onlinee",
+            "timer": 47.37,
+            "date": "2026-05-11T10:58:02.110788",
+            "score": 9,
+            "synced": true,
+            "game_state": 2
+        },
+        {
+            "id": 8,
+            "username": "Onlinee",
+            "timer": 37.13,
+            "date": "2026-05-11T10:58:47.848289",
+            "score": 10,
+            "synced": true,
+            "game_state": 2
+        },
+        {
+            "id": 9,
+            "username": "Gaetan",
+            "timer": 31.9,
+            "date": "2026-05-11T11:00:32.664316",
+            "score": 7,
+            "synced": false,
+            "game_state": 2
+        },
+        {
+            "id": 10,
+            "username": "test",
+            "timer": 33.5,
+            "date": "2026-05-11T11:06:12.829204",
+            "score": 0,
+            "synced": true,
+            "game_state": 2
+        },
+        {
+            "id": 11,
+            "username": "test",
+            "timer": 10.59,
+            "date": "2026-05-11T11:06:25.641944",
+            "score": 2,
+            "synced": true,
+            "game_state": 2
+        },
+        {
+            "id": 12,
+            "username": "test",
+            "timer": 49.38,
+            "date": "2026-05-11T11:11:29.932042",
+            "score": 1,
+            "synced": true,
+            "game_state": 2
+        },
+        {
+            "id": 13,
+            "username": "test",
+            "timer": 17.81,
+            "date": "2026-05-11T11:13:39.875638",
+            "score": 2,
+            "synced": true,
+            "game_state": 2
+        },
+        {
+            "id": 14,
+            "username": "Niels",
+            "timer": 11.79,
+            "date": "2026-05-11T11:15:17.775481",
+            "score": 0,
+            "synced": true,
+            "game_state": 2
+        },
+        {
+            "id": 15,
+            "username": "Niels",
+            "timer": 19.13,
+            "date": "2026-05-11T11:15:38.973213",
+            "score": 4,
+            "synced": true,
+            "game_state": 2
+        },
+        {
+            "id": 16,
+            "username": "Niels",
+            "timer": 11.11,
+            "date": "2026-05-11T11:16:02.302995",
+            "score": 3,
+            "synced": false,
+            "game_state": 2
+        },
+        {
+            "id": 17,
+            "username": "gaetan",
+            "timer": 30.09,
+            "date": "2026-05-11T11:21:22.653667",
+            "score": 1,
+            "synced": false,
+            "game_state": 2
+        },
+        {
+            "id": 18,
+            "username": "gaetan",
+            "timer": 14.12,
+            "date": "2026-05-11T11:24:02.180193",
+            "score": 2,
+            "synced": false,
+            "game_state": 2
+        },
+        {
+            "id": 19,
+            "username": "gaetan",
+            "timer": 7.92,
+            "date": "2026-05-11T11:24:59.455290",
+            "score": 2,
+            "synced": true,
+            "game_state": 2
+        },
+        {
+            "id": 20,
+            "username": "kilian",
+            "timer": 26.59,
+            "date": "2026-05-11T11:36:33.892837",
+            "score": 0,
+            "synced": false,
+            "game_state": 2
+        },
+        {
+            "id": 21,
+            "username": "cookie",
+            "score": 1,
+            "timer": 20.739,
+            "game_state": 2,
+            "date": "2026-05-11T11:41:30.097975",
+            "synced": false
+        },
+        {
+            "id": 22,
+            "username": "Cookie",
+            "score": 1,
+            "timer": 10.349,
+            "game_state": 2,
+            "date": "2026-05-11T11:43:35.216000",
+            "synced": true
+        },
+        {
+            "id": 23,
+            "username": "Cookie",
+            "score": 0,
+            "timer": 9.422,
+            "game_state": 2,
+            "date": "2026-05-11T11:43:47.777356",
+            "synced": true
+        },
+        {
+            "id": 24,
+            "username": "Cookie",
+            "score": 2,
+            "timer": 7.492,
+            "game_state": 2,
+            "date": "2026-05-11T11:43:57.461999",
+            "synced": true
+        },
+        {
+            "id": 25,
+            "username": "cookie",
+            "score": 7,
+            "timer": 28.249,
+            "game_state": 2,
+            "date": "2026-05-11T11:44:55.382603",
+            "synced": false
+        },
+        {
+            "id": 26,
             "username": "Mouldi",
-            "score_value": 0,
+            "score": 0,
             "timer": 1.59,
+            "game_state": 2,
             "date": "2026-05-11 08:27:35",
-            "status_sync": 0
+            "synced": false
         },
         {
+            "id": 27,
             "username": "Mouldi",
-            "score_value": 0,
+            "score": 0,
             "timer": 1.57,
+            "game_state": 2,
             "date": "2026-05-11 08:27:46",
-            "status_sync": 0
+            "synced": false
         },
         {
+            "id": 28,
             "username": "Mouldi",
-            "score_value": 6,
+            "score": 6,
             "timer": 17.36,
+            "game_state": 2,
             "date": "2026-05-11 08:28:07",
-            "status_sync": 0
+            "synced": false
         },
         {
+            "id": 29,
             "username": "Mouldi",
-            "score_value": 0,
+            "score": 0,
             "timer": 1.62,
+            "game_state": 2,
             "date": "2026-05-11 08:28:15",
-            "status_sync": 0
+            "synced": false
         },
         {
+            "id": 30,
             "username": "Mouldi",
-            "score_value": 2,
+            "score": 2,
             "timer": 13.38,
+            "game_state": 2,
             "date": "2026-05-11 08:55:21",
-            "status_sync": 0
+            "synced": false
         },
         {
+            "id": 31,
             "username": "Mouldi",
-            "score_value": 2,
+            "score": 2,
             "timer": 6.45,
+            "game_state": 2,
             "date": "2026-05-11 08:55:36",
-            "status_sync": 0
+            "synced": false
         },
         {
+            "id": 32,
             "username": "David",
-            "score_value": 5,
+            "score": 5,
             "timer": 25.85,
+            "game_state": 2,
             "date": "2026-05-11 09:00:33",
-            "status_sync": 0
+            "synced": false
+        },
+        {
+            "id": 33,
+            "username": "Imad",
+            "score": 11,
+            "timer": 50.117,
+            "game_state": 2,
+            "date": "2026-05-11T11:53:06.044633",
+            "synced": true
+        },
+        {
+            "id": 34,
+            "username": "Imad",
+            "score": 8,
+            "timer": 24.137,
+            "game_state": 2,
+            "date": "2026-05-11T11:53:32.770452",
+            "synced": true
+        },
+        {
+            "id": 35,
+            "username": "Imad",
+            "score": 1,
+            "timer": 1.786,
+            "game_state": 2,
+            "date": "2026-05-11T11:53:36.097131",
+            "synced": true
         }
     ]
 }

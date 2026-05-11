@@ -97,7 +97,6 @@ class Game:
                         self._toggle_sync_from_menu()
                 elif self.state == STATE_PLAYING:
                     if event.key == MENU_TOGGLE:
-                        # Synchronise le label avant d'afficher le menu
                         self.menu.sync_enabled = db.is_sync_enabled(self.current_user)
                         self.menu.pause()
                         self.wm.toggle_resizable(True)
@@ -159,6 +158,8 @@ class Game:
             self.clock.tick(FPS)
 
     def _after_auth(self):
+        score_manager.refresh_online_cache(self.current_user)
+
         if not db.has_configured_sync(self.current_user):
             self._run_sync_screen()
         else:
@@ -166,8 +167,13 @@ class Game:
 
     def _toggle_sync_from_menu(self):
         current = db.is_sync_enabled(self.current_user)
-        db.set_sync_preference(self.current_user, not current)
-        self.menu.sync_enabled = not current  # met à jour le label immédiatement
+        new_state = not current
+        db.update_user_sync_preference(self.current_user, new_state)
+        self.menu.sync_enabled = new_state
+
+        # Si on active, synchroniser les scores existants en arrière-plan
+        if new_state:
+            score_manager.sync_existing_scores(self.current_user)
 
     # ------------------------------------------------------------------ game
     def _handle_overlay_input(self, key):
@@ -196,48 +202,27 @@ class Game:
         elif key == RIGHT and self.snake.direction != LEFT:
             self.snake.direction = RIGHT; self.direction_lock = True
 
-    def _update(self):
-        self.menu.update()
-
-        if self.state in [STATE_AUTH, STATE_SYNC]:
-            return
-
-        if self.menu.countdown or (not self.menu.active and self.state == STATE_PLAYING):
-            self.wm.toggle_resizable(False)
-        else:
-            self.wm.toggle_resizable(True)
-
-        if self.menu.active or self.state in [STATE_LOSE, STATE_WIN]:
-            return
-
-        now = pygame.time.get_ticks()
-        if now - self.last_move > self.move_delay:
-            self.direction_lock = False
-            new_head = self.snake.get_next_head_position()
-
-            if self.snake.check_collision(new_head):
-                self._handle_game_over(STATE_LOSE); return
-
-            max_cells = (WIDTH // CELL_SIZE) * (HEIGHT // CELL_SIZE)
-            if len(self.snake.segments) >= max_cells:
-                self._handle_game_over(STATE_WIN); return
-
-            if new_head == self.apple.position:
-                self.snake.move(new_head, growing=True)
-                self.apple.spawn(self.snake.segments)
-                self.move_delay = max(90, self.move_delay - 3)
-            else:
-                self.snake.move(new_head, growing=False)
-
-            self.last_move = now
-
     def _handle_game_over(self, result_state):
+        self.direction_lock = True
         self.state = result_state
         self.state_render.selected_index = 0
+
         elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000
-        score_manager.add_new_score(self.current_user, self.snake.score, elapsed_time, result_state)
+
+        # Sauvegarde locale immédiate + envoi HTTP asynchrone si online
+        score_manager.add_new_score(
+            self.current_user,
+            self.snake.score,
+            elapsed_time,
+            result_state          # game_state transmis pour cohérence avec le JSON
+        )
         self.score_saved = True
+
+        # Rafraîchir le cache distant en arrière-plan (prêt à la prochaine partie)
+        score_manager.refresh_online_cache(self.current_user)
+
         self.wm.toggle_resizable(True)
+        self.last_move = pygame.time.get_ticks() + 10000
 
     def reset_game(self):
         self.snake.reset()
@@ -248,6 +233,48 @@ class Game:
         self.menu.countdown = False
         self.start_time = pygame.time.get_ticks()
         self.score_saved = False
+        self.direction_lock = False
+        self.last_move = pygame.time.get_ticks()
+
+    def _update(self):
+        self.menu.update()
+
+        if self.state in [STATE_AUTH, STATE_SYNC]:
+            return
+
+        if self.state in [STATE_LOSE, STATE_WIN]:
+            return
+
+        if self.menu.countdown or (not self.menu.active and self.state == STATE_PLAYING):
+            self.wm.toggle_resizable(False)
+        else:
+            self.wm.toggle_resizable(True)
+
+        if self.menu.active:
+            return
+
+        now = pygame.time.get_ticks()
+        if now - self.last_move > self.move_delay:
+            self.direction_lock = False
+            new_head = self.snake.get_next_head_position()
+
+            if self.snake.check_collision(new_head):
+                self._handle_game_over(STATE_LOSE)
+                return
+
+            max_cells = (WIDTH // CELL_SIZE) * (HEIGHT // CELL_SIZE)
+            if len(self.snake.segments) >= max_cells:
+                self._handle_game_over(STATE_WIN)
+                return
+
+            if new_head == self.apple.position:
+                self.snake.move(new_head, growing=True)
+                self.apple.spawn(self.snake.segments)
+                self.move_delay = max(90, self.move_delay - 3)
+            else:
+                self.snake.move(new_head, growing=False)
+
+            self.last_move = now
 
     def _draw(self):
         if self.state == STATE_AUTH:
@@ -258,5 +285,6 @@ class Game:
             if self.menu.active:
                 self.render.draw_menu(self.menu)
             elif self.state in [STATE_LOSE, STATE_WIN]:
+                self.state_render.current_username = self.current_user
                 self.state_render.draw_overlay(self.state, self.snake.score)
             self.wm.final_render()
