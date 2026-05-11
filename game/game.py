@@ -55,7 +55,6 @@ class Game:
             self._draw()
             self.clock.tick(FPS)
 
-    # ------------------------------------------------------------------ events
     def _handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -65,7 +64,6 @@ class Game:
                 self.wm.screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
                 self.auth_render._update_screen_ref(self.wm.screen)
 
-            # --- AUTH ---
             if self.state == STATE_AUTH:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = event.pos
@@ -82,7 +80,6 @@ class Game:
                         box.handle_event(event)
                 return
 
-            # --- JEU ---
             if event.type == pygame.KEYDOWN:
                 if self.state in [STATE_LOSE, STATE_WIN]:
                     self._handle_overlay_input(event.key)
@@ -103,7 +100,6 @@ class Game:
                     elif not self.direction_lock:
                         self._change_direction(event.key)
 
-    # ------------------------------------------------------------------ auth
     def _toggle_auth_mode(self):
         self.auth_mode = "LOGIN" if self.auth_mode == "REGISTER" else "REGISTER"
         self.auth_error = ""
@@ -126,17 +122,16 @@ class Game:
                 return
             if db.register_user(username, password):
                 self.current_user = username
-                self._after_auth()  # pas de download ici
+                self._after_auth()
             else:
                 self.auth_error = "Ce pseudo est déjà pris."
         else:
             if db.login_user(username, password):
                 self.current_user = username
-                self._after_auth(from_login=True)  # download ici
+                self._after_auth(from_login=True)
             else:
                 self.auth_error = "Pseudo ou mot de passe incorrect."
     def _run_sync_screen(self):
-        """Mini-boucle bloquante — un seul rendu, zéro clignotement."""
         self.wm.screen.fill((20, 20, 30))
         self.auth_render.draw_sync()
         pygame.display.flip()
@@ -174,11 +169,9 @@ class Game:
         db.update_user_sync_preference(self.current_user, new_state)
         self.menu.sync_enabled = new_state
 
-        # Si on active, synchroniser les scores existants en arrière-plan
         if new_state:
             score_manager.sync_existing_scores(self.current_user)
 
-    # ------------------------------------------------------------------ game
     def _handle_overlay_input(self, key):
         if key in [UP, MENU_UP]:
             self.state_render.selected_index = (self.state_render.selected_index - 1) % 2
@@ -212,16 +205,14 @@ class Game:
 
         elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000
 
-        # Sauvegarde locale immédiate + envoi HTTP asynchrone si online
         score_manager.add_new_score(
             self.current_user,
             self.snake.score,
             elapsed_time,
-            result_state          # game_state transmis pour cohérence avec le JSON
+            result_state
         )
         self.score_saved = True
 
-        # Rafraîchir le cache distant en arrière-plan (prêt à la prochaine partie)
         score_manager.refresh_online_cache(self.current_user)
 
         self.wm.toggle_resizable(True)

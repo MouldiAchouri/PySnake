@@ -53,7 +53,6 @@ class Menu:
                 return "TOGGLE_FS"
             elif self.selected_index == 1:
                 return "TOGGLE_SYNC"
-            # index 2 = Retour
             self.in_options = False
             self.selected_index = 2
             return None

@@ -1,14 +1,14 @@
 import pygame
-from config.constants import WIDTH, HEIGHT, STATE_LOSE, WHITE
-import score_manager  # Change ici
+from config.constants import WIDTH, HEIGHT, STATE_LOSE
+import score_manager
 
 
 class StateRender:
-    def __init__(self, screen, font_bold=None, font_standard=None):
+    def __init__(self, screen):
         self.screen = screen
         self.selected_index = 0
         self.options = ["Recommencer", "Quitter"]
-        self.current_username = None  # Ajoute cette ligne
+        self.current_username = None
 
     def _get_font(self, ratio, bold=False, mono=False):
         size = int(HEIGHT * ratio)
@@ -36,14 +36,11 @@ class StateRender:
             self._draw_centered(text, self._get_font(0.05, bold=is_selected), color, y_pos)
 
     def _draw_highscore_table(self):
-        """Affiche le leaderboard selon le mode du joueur"""
-        # Utilise score_manager.get_leaderboard au lieu de load_scores
         if self.current_username:
             scores = score_manager.get_leaderboard(self.current_username)
         else:
-            scores = []  # Pas de joueur connecté, affiche vide
+            scores = []
 
-        # Si pas de scores, affiche un message
         if not scores:
             font = self._get_font(0.035, mono=True)
             self._draw_centered("Aucun score disponible", font, (150, 150, 150), HEIGHT * 0.5)
@@ -73,11 +70,3 @@ class StateRender:
         surface = font.render(text, True, color)
         rect = surface.get_rect(center=(WIDTH // 2, y_pos))
         self.screen.blit(surface, rect)
-
-    def draw_leaderboard(self, username):
-        """Dessine le leaderboard combiné"""
-        import score_manager
-        scores = score_manager.get_leaderboard(username)
-
-        font = pygame.font.Font(None, 36)
-        title = font.render("LEADERBOARD", True, WHITE)
