@@ -1,20 +1,9 @@
-"""
-score_manager.py
-----------------
-Aucun appel réseau dans le thread principal.
-
-offline → top 10 local (JSON uniquement)
-online  → fusion local + cache distant, top 10
-"""
-
 import threading
 import utils.db_manager as db
 
 _remote_cache: list = []
 _cache_lock = threading.Lock()
 
-
-# ------------------------------------------------------------------ écriture
 
 def add_new_score(username: str, score: int, elapsed_time: float, game_state: int):
     score_id = db.save_score_locally(username, score, elapsed_time, game_state)
@@ -23,11 +12,13 @@ def add_new_score(username: str, score: int, elapsed_time: float, game_state: in
 
 
 def _push_score_async(username: str, score_id: int, score: int, timer: float):
+    from config.constants import SERVER_URL
+    import requests
+
     def _worker():
-        import requests
         try:
             r = requests.post(
-                "http://localhost:8000/scores",
+                f"{SERVER_URL}/scores",
                 json={"username": username, "score_value": score, "timer": timer},
                 timeout=5
             )
@@ -35,6 +26,7 @@ def _push_score_async(username: str, score_id: int, score: int, timer: float):
                 db.mark_score_as_synced(score_id)
         except Exception as e:
             print(f"[score_manager] push error: {e}")
+
     threading.Thread(target=_worker, daemon=True).start()
 
 
@@ -46,10 +38,7 @@ def sync_existing_scores(username: str):
     ).start()
 
 
-# ------------------------------------------------------------------ lecture
-
 def get_leaderboard(username: str) -> list:
-    """Instantané, aucun réseau."""
     local = db.get_top_10_local()
 
     if not db.is_sync_enabled(username):
@@ -71,7 +60,6 @@ def get_leaderboard(username: str) -> list:
 
 
 def refresh_online_cache(username: str):
-    """Rafraîchit le cache distant en arrière-plan après un game over."""
     if not db.is_sync_enabled(username):
         return
 

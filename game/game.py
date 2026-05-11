@@ -34,7 +34,7 @@ class Game:
         self.state_render = StateRender(self.wm.virtual_surface)
         self.auth_render = AuthRender(self.wm.screen)
 
-        self.auth_mode = "REGISTER"
+        self.auth_mode = "LOGIN"
         self.inputs = {
             "user": InputBox(0, 0, 0, 0),
             "pass": InputBox(0, 0, 0, 0, is_password=True),

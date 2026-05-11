@@ -1,44 +1,13 @@
-"""
-db_manager.py
--------------
-Une seule source de vérité : data/user.json, clé "local_scores".
-Pas de SQL. Pas de réseau dans ce fichier.
-
-Format user.json :
-{
-    "users": {
-        "alice": {
-            "password_hash": "...",
-            "player_uuid": "...",
-            "online_sync_enabled": true
-        }
-    },
-    "local_scores": [
-        {
-            "id": 1,
-            "username": "alice",
-            "score": 12,
-            "timer": 34.5,
-            "game_state": 2,
-            "date": "2026-05-11T...",
-            "synced": false
-        }
-    ],
-    "next_score_id": 2
-}
-"""
-
 import json
 import hashlib
 import uuid
 from datetime import datetime
 from pathlib import Path
+from config.constants import SERVER_URL
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 JSON_PATH = BASE_DIR / "data/user.json"
 
-
-# ------------------------------------------------------------------ I/O
 
 def init_db():
     if not JSON_PATH.exists():
@@ -57,7 +26,6 @@ def _load() -> dict:
     data.setdefault("local_scores", [])
     data.setdefault("next_score_id", 1)
 
-    # Sécurité : si des entrées sans "id" traînent encore, on leur en attribue un
     max_id = max((s.get("id", 0) for s in data["local_scores"]), default=0)
     counter = max_id + 1
     for s in data["local_scores"]:
@@ -66,7 +34,6 @@ def _load() -> dict:
             counter += 1
         s.setdefault("synced", False)
         s.setdefault("game_state", 2)
-        # Normaliser score (au cas où un score_value traînerait encore)
         if "score_value" in s and "score" not in s:
             s["score"] = s.pop("score_value")
 
@@ -79,8 +46,6 @@ def _save(data: dict):
     with open(JSON_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
-
-# ------------------------------------------------------------------ auth
 
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
@@ -104,8 +69,6 @@ def login_user(username: str, password: str) -> bool:
     return user is not None and user["password_hash"] == hash_password(password)
 
 
-# ------------------------------------------------------------------ sync preference
-
 def has_configured_sync(username: str) -> bool:
     data = _load()
     user = data["users"].get(username)
@@ -128,8 +91,6 @@ def is_sync_enabled(username: str) -> bool:
     user = data["users"].get(username)
     return bool(user.get("online_sync_enabled", False)) if user else False
 
-
-# ------------------------------------------------------------------ scores locaux
 
 def save_score_locally(username: str, score: int, timer: float, game_state: int) -> int:
     data = _load()
@@ -167,10 +128,6 @@ def get_unsynced_scores(username: str) -> list:
 
 
 def get_top_10_local() -> list:
-    """
-    Top 10 tous joueurs confondus sur ce PC.
-    Tri : score DESC, timer ASC.
-    """
     data = _load()
     scores = [
         {"username": s["username"], "score": s["score"], "timer": s["timer"]}
@@ -180,10 +137,7 @@ def get_top_10_local() -> list:
     return scores[:10]
 
 
-# ------------------------------------------------------------------ réseau (threads uniquement)
-
-def sync_scores_to_server(username: str, server_url: str = "http://localhost:8000") -> bool:
-    """NE PAS appeler depuis le thread principal."""
+def sync_scores_to_server(username: str) -> bool:
     import requests
     unsynced = get_unsynced_scores(username)
     if not unsynced:
@@ -192,7 +146,7 @@ def sync_scores_to_server(username: str, server_url: str = "http://localhost:800
     for entry in unsynced:
         try:
             r = requests.post(
-                f"{server_url}/scores",
+                f"{SERVER_URL}/scores",
                 json={"username": username, "score_value": entry["score"], "timer": entry["timer"]},
                 timeout=5
             )
@@ -206,17 +160,16 @@ def sync_scores_to_server(username: str, server_url: str = "http://localhost:800
     return all_ok
 
 
-def fetch_online_leaderboard(server_url: str = "http://localhost:8000", limit: int = 10) -> list:
-    """NE PAS appeler depuis le thread principal."""
+def fetch_online_leaderboard(limit: int = 10) -> list:
     import requests
     try:
-        r = requests.get(f"{server_url}/leaderboard?limit={limit}", timeout=3)
+        r = requests.get(f"{SERVER_URL}/leaderboard?limit={limit}", timeout=3)
         if r.status_code == 200:
             return [
                 {
                     "username": e.get("username", "?"),
-                    "score":    e.get("score", e.get("score_value", 0)),
-                    "timer":    e.get("timer", 0.0),
+                    "score": e.get("score", e.get("score_value", 0)),
+                    "timer": e.get("timer", 0.0),
                 }
                 for e in r.json()
             ]

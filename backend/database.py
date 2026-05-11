@@ -1,26 +1,28 @@
-import sqlite3
-from pathlib import Path
+import os
+import psycopg2
+from dotenv import load_dotenv
 
-# Le chemin vers la base de données
-BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "server_data.db"
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+
+def get_conn():
+    return psycopg2.connect(DATABASE_URL)
+
 
 def init_server_db():
-    """Initialise la base de données serveur"""
-    conn = sqlite3.connect(str(DB_PATH))
-    cursor = conn.cursor()
-    cursor.execute('''
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS global_scores (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             username TEXT NOT NULL,
             score_value INTEGER NOT NULL,
             timer REAL NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
-    ''')
+    """)
     conn.commit()
+    cur.close()
     conn.close()
-    print("✅ Base de données serveur initialisée.")
-
-if __name__ == "__main__":
-    init_server_db()
