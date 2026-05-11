@@ -60,3 +60,19 @@ async def get_leaderboard(limit: int = 10):
         return []
     finally:
         conn.close()
+
+@app.get("/scores/{username}")
+async def get_user_scores(username: str):
+    conn = get_conn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT score_value, timer FROM global_scores WHERE username = %s ORDER BY score_value DESC",
+            (username,)
+        )
+        rows = cur.fetchall()
+        return [{"score": r[0], "timer": r[1]} for r in rows]
+    except Exception as e:
+        return[]
+    finally:
+        conn.close()
