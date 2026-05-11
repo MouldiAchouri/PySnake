@@ -1,19 +1,21 @@
 from config.constants import *
 import sys
 
+
 class Menu:
-    def __init__(self, options= None):
+    def __init__(self, options=None):
         self.active = False
         self.countdown = False
         self.timer = 0
         self.in_options = False
         self.confirm_quit = False
+        self.sync_enabled = False
 
         self.overlay = pygame.Surface((WIDTH, HEIGHT))
-        self.overlay.fill((0 ,0 ,0 ))
+        self.overlay.fill((0, 0, 0))
         self.start_ticks = pygame.time.get_ticks()
 
-        self.main_options = options if options else ["Reprendre","Recommencer","Option", "Quitter"]
+        self.main_options = options if options else ["Reprendre", "Recommencer", "Option", "Quitter"]
         self.settings_options = ["Plein Ecran", "Retour"]
         self.selected_index = 0
 
@@ -23,7 +25,8 @@ class Menu:
             return [TXT_CANCEL, TXT_CONFIRM_QUIT]
         if self.in_options:
             is_full = pygame.display.get_surface().get_flags() & pygame.FULLSCREEN
-            return [TXT_WINDOWED if is_full else TXT_FULLSCREEN, TXT_BACK]
+            sync_label = "Sync : ON  [désactiver]" if self.sync_enabled else "Sync : OFF [activer]"
+            return [TXT_WINDOWED if is_full else TXT_FULLSCREEN, sync_label, TXT_BACK]
         return [TXT_RESUME, TXT_RESTART, TXT_OPTIONS, TXT_QUIT]
 
     def start_countdown(self):
@@ -46,13 +49,19 @@ class Menu:
             return None
 
         if self.in_options:
-            if self.selected_index == 0: return "TOGGLE_FS"
+            if self.selected_index == 0:
+                return "TOGGLE_FS"
+            elif self.selected_index == 1:
+                return "TOGGLE_SYNC"
+            # index 2 = Retour
             self.in_options = False
             self.selected_index = 2
             return None
 
-        if selection == TXT_RESUME: self.start_countdown()
-        elif selection == TXT_RESTART: return "RESET"
+        if selection == TXT_RESUME:
+            self.start_countdown()
+        elif selection == TXT_RESTART:
+            return "RESET"
         elif selection == TXT_OPTIONS:
             self.in_options = True
             self.selected_index = 0
@@ -83,11 +92,7 @@ class Menu:
         if self.active and self.countdown:
             now = pygame.time.get_ticks()
             elapsed = (now - self.start_ticks) // 1000
-
             self.timer = 3 - elapsed
-
             if self.timer <= 0:
                 self.active = False
                 self.countdown = False
-
-

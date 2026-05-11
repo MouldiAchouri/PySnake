@@ -1,0 +1,98 @@
+{
+    "users": {
+        "Mouldi": {
+            "password_hash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+            "online_sync_enabled": false
+        },
+        "cookie": {
+            "password_hash": "d7e83e28a04b537e64424546b14caf9b67bad2f28dabce68116e0d372319fa00",
+            "online_sync_enabled": false
+        },
+        "Cookie": {
+            "password_hash": "45823eaac0c829b633f393ddf15c042d87fb1f1ce6a7b0a1fd0dc7e4f76126ea",
+            "online_sync_enabled": false
+        },
+        "David": {
+            "password_hash": "a6b54c20a7b96eeac1a911e6da3124a560fe6dc042ebf270e3676e7095b95652",
+            "online_sync_enabled": false
+        },
+        "Vikket": {
+            "password_hash": "32987593ae4cebc8380dd3d5201840fb6cd44988ad14a2393ab91bd0f06507f7",
+            "online_sync_enabled": true
+        },
+        "Popo": {
+            "password_hash": "03a0790fb1f7efb7c440bdc8cf69589a42674a5b2b7fb3327dfcddca4e6eb58c",
+            "online_sync_enabled": false
+        },
+        "Cookies": {
+            "password_hash": "abc2f00b86baa8b1d2e6116e6836900fcb335af9aae89e681aa329333fd210be",
+            "online_sync_enabled": true
+        },
+        "Pang": {
+            "password_hash": "01ce85667f394c4715324f2af3afd627354314401d42e8cfe630ff8beda3baaf"
+        },
+        "Ahmet": {
+            "password_hash": "9b0f9ababae6b494c97f4431d1ea1a6f8bd0700c34e196dd6217c2583df76971",
+            "online_sync_enabled": false
+        },
+        "Antho": {
+            "password_hash": "1cec4650a7259cae2c090f57ed3a1189cf4620acba07aed2f41d353cd95adbd0",
+            "online_sync_enabled": true
+        },
+        "Imad": {
+            "password_hash": "eb6073f08440af71335b843b5b311e26433d6c75d115e4567b94440cdd21c635",
+            "online_sync_enabled": true
+        }
+    },
+    "scores": [
+        {
+            "username": "Mouldi",
+            "score_value": 0,
+            "timer": 1.59,
+            "date": "2026-05-11 08:27:35",
+            "status_sync": 0
+        },
+        {
+            "username": "Mouldi",
+            "score_value": 0,
+            "timer": 1.57,
+            "date": "2026-05-11 08:27:46",
+            "status_sync": 0
+        },
+        {
+            "username": "Mouldi",
+            "score_value": 6,
+            "timer": 17.36,
+            "date": "2026-05-11 08:28:07",
+            "status_sync": 0
+        },
+        {
+            "username": "Mouldi",
+            "score_value": 0,
+            "timer": 1.62,
+            "date": "2026-05-11 08:28:15",
+            "status_sync": 0
+        },
+        {
+            "username": "Mouldi",
+            "score_value": 2,
+            "timer": 13.38,
+            "date": "2026-05-11 08:55:21",
+            "status_sync": 0
+        },
+        {
+            "username": "Mouldi",
+            "score_value": 2,
+            "timer": 6.45,
+            "date": "2026-05-11 08:55:36",
+            "status_sync": 0
+        },
+        {
+            "username": "David",
+            "score_value": 5,
+            "timer": 25.85,
+            "date": "2026-05-11 09:00:33",
+            "status_sync": 0
+        }
+    ]
+}
