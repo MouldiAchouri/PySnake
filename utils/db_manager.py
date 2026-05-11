@@ -56,6 +56,19 @@ def register_user(username: str, password: str) -> bool:
     data = _load()
     if username in data["users"]:
         return False
+
+    try:
+        r = requests.post(
+            f"{SERVER_URL}/register",
+            json={"username": username, "password_hash": hash_password(password)},
+            timeout=5
+        )
+        if r.json().get("status") != "success":
+            return False
+    except Exception as e:
+        print(f"[db_manager] register error: {e}")
+        return False
+
     data["users"][username] = {
         "password_hash": hash_password(password),
         "player_uuid": str(uuid.uuid4()),
@@ -67,8 +80,27 @@ def register_user(username: str, password: str) -> bool:
 def login_user(username: str, password: str) -> bool:
     data = _load()
     user = data["users"].get(username)
-    return user is not None and user["password_hash"] == hash_password(password)
 
+    if user is not None:
+        return user["password_hash"] == hash_password(password)
+
+    try:
+        r = requests.post(
+            f"{SERVER_URL}/login",
+            json={"username": username, "password_hash": hash_password(password)},
+            timeout=5
+        )
+        if r.json().get("status") == "success":
+            data["users"][username] = {
+                "password_hash": hash_password(password),
+                "player_uuid": str(uuid.uuid4()),
+            }
+            _save(data)
+            return True
+    except Exception as e:
+        print(f"[db_manager] login error: {e}")
+
+    return False
 
 def has_configured_sync(username: str) -> bool:
     data = _load()

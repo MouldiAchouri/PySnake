@@ -1,5 +1,5 @@
 import sys
-import pygame
+import threading
 from config.constants import *
 from game import Snake, Apple, Menu
 from view.render import Render
@@ -126,16 +126,15 @@ class Game:
                 return
             if db.register_user(username, password):
                 self.current_user = username
-                self._after_auth()
+                self._after_auth()  # pas de download ici
             else:
                 self.auth_error = "Ce pseudo est déjà pris."
         else:
             if db.login_user(username, password):
                 self.current_user = username
-                self._after_auth()
+                self._after_auth(from_login=True)  # download ici
             else:
                 self.auth_error = "Pseudo ou mot de passe incorrect."
-
     def _run_sync_screen(self):
         """Mini-boucle bloquante — un seul rendu, zéro clignotement."""
         self.wm.screen.fill((20, 20, 30))
@@ -157,14 +156,16 @@ class Game:
                         return
             self.clock.tick(FPS)
 
-    def _after_auth(self):
+    def _after_auth(self, from_login=False):
         score_manager.refresh_online_cache(self.current_user)
 
         if not db.has_configured_sync(self.current_user):
             self._run_sync_screen()
-            if db.is_sync_enabled(self.current_user):
-                db.download_scores_from_server(self.current_user)
+            if from_login and db.is_sync_enabled(self.current_user):
+                threading.Thread(target=db.download_scores_from_server, args=(self.current_user,), daemon=True).start()
         else:
+            if from_login and db.is_sync_enabled(self.current_user):
+                threading.Thread(target=db.download_scores_from_server, args=(self.current_user,), daemon=True).start()
             self.state = STATE_PLAYING
 
     def _toggle_sync_from_menu(self):
