@@ -162,6 +162,8 @@ class Game:
 
         if not db.has_configured_sync(self.current_user):
             self._run_sync_screen()
+            if db.is_sync_enabled(self.current_user):
+                db.download_scores_from_server(self.current_user)
         else:
             self.state = STATE_PLAYING
 

@@ -1,6 +1,7 @@
 import json
 import hashlib
 import uuid
+import requests
 from datetime import datetime
 from pathlib import Path
 from config.constants import SERVER_URL
@@ -161,7 +162,6 @@ def sync_scores_to_server(username: str) -> bool:
 
 
 def fetch_online_leaderboard(limit: int = 10) -> list:
-    import requests
     try:
         r = requests.get(f"{SERVER_URL}/leaderboard?limit={limit}", timeout=3)
         if r.status_code == 200:
@@ -176,3 +176,25 @@ def fetch_online_leaderboard(limit: int = 10) -> list:
     except Exception as e:
         print(f"[db_manager] leaderboard fetch error: {e}")
     return []
+
+def download_scores_from_server(username: str):
+    import requests
+    try:
+        r = requests.get(f"{SERVER_URL}/scores/{username}", timeout=5)
+        if r.status_code == 200:
+            remote_scores = r.json()
+            data = _load()
+            for s in remote_scores:
+                data["local_scores"].append({
+                    "id": data["next_score_id"],
+                    "username": username,
+                    "score": s["score"],
+                    "timer": s["timer"],
+                    "game_state": 2,
+                    "date": datetime.now().isoformat(),
+                    "synced": True
+                })
+                data["next_score_id"] += 1
+            _save(data)
+    except Exception as e:
+        print(f"[db_manager] download error: {e}")
