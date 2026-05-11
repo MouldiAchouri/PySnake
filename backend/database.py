@@ -26,3 +26,15 @@ def init_server_db():
     conn.commit()
     cur.close()
     conn.close()
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )   
+    """)
+    conn.commit()
+    cur.close()
+    conn.close()

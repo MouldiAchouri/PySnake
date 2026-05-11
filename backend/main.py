@@ -76,3 +76,43 @@ async def get_user_scores(username: str):
         return[]
     finally:
         conn.close()
+
+class AuthData(BaseModel):
+    username: str
+    password_hash: str
+
+@app.post("/register")
+async def register(data: AuthData):
+    conn = get_conn()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT id FROM users WHERE username = %s", (data.username,))
+        if cur.fetchone():
+            return {"status": "error", "message": "Pseudo déjà pris"}
+        cur.execute(
+            "INSERT INTO users (username, password_hash) VALUES (%s, %s)",
+            (data.username, data.password_hash)
+        )
+        conn.commit()
+        return {"status": "success"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()
+
+@app.post("/login")
+async def login(data: AuthData):
+    conn = get_conn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT id FROM users WHERE username = %s AND password_hash = %s",
+            (data.username, data.password_hash)
+        )
+        if cur.fetchone():
+            return {"status": "success"}
+        return {"status": "error", "message": "Pseudo ou mot de passe incorrect"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()

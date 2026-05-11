@@ -1,85 +1,39 @@
 {
     "users": {
-        "Pang": {
-            "password_hash": "01ce85667f394c4715324f2af3afd627354314401d42e8cfe630ff8beda3baaf",
-            "player_uuid": "ca570109-3f8f-49c8-a18f-db2ac8fd7f11",
-            "online_sync_enabled": false
-        },
-        "David": {
-            "password_hash": "a6b54c20a7b96eeac1a911e6da3124a560fe6dc042ebf270e3676e7095b95652",
-            "player_uuid": "14336290-a8e6-4514-8768-91417fe3da71",
-            "online_sync_enabled": false
-        },
-        "vikket": {
-            "password_hash": "39dc0e7775dc6f9fa291bc9f76b8f19e2202f4f10c76a274058dede7dd6271ef",
-            "player_uuid": "1ad1352a-61c8-48de-bb5e-794007a86c4f",
+        "imad": {
+            "password_hash": "7692e4485de64a1c81b1210fac8396ce10e877e0d3ebf3de0e31b2cc4c65032d",
+            "player_uuid": "21e4264e-e7cb-4306-8857-6663affe0b10",
             "online_sync_enabled": false
         }
     },
     "local_scores": [
         {
             "id": 1,
-            "username": "Pang",
-            "score": 0,
-            "timer": 33.508,
+            "username": "imad",
+            "score": 1,
+            "timer": 19.988,
             "game_state": 2,
-            "date": "2026-05-11T13:42:45.982101",
-            "synced": false
+            "date": "2026-05-11T13:57:46.643038",
+            "synced": true
         },
         {
             "id": 2,
-            "username": "Pang",
+            "username": "imad",
             "score": 1,
-            "timer": 4.599,
+            "timer": 7.698,
             "game_state": 2,
-            "date": "2026-05-11T13:43:01.858870",
+            "date": "2026-05-11T13:57:56.610325",
             "synced": true
         },
         {
             "id": 3,
-            "username": "Pang",
-            "score": 1,
-            "timer": 8.807,
-            "game_state": 2,
-            "date": "2026-05-11T13:43:19.159064",
-            "synced": false
-        },
-        {
-            "id": 4,
-            "username": "David",
-            "score": 1,
-            "timer": 41.878,
-            "game_state": 2,
-            "date": "2026-05-11T13:44:05.784393",
-            "synced": true
-        },
-        {
-            "id": 5,
-            "username": "David",
+            "username": "imad",
             "score": 0,
-            "timer": 6.764,
+            "timer": 13.86,
             "game_state": 2,
-            "date": "2026-05-11T13:44:15.249623",
-            "synced": false
-        },
-        {
-            "id": 6,
-            "username": "vikket",
-            "score": 0,
-            "timer": 17.876,
-            "game_state": 2,
-            "date": "2026-05-11T13:44:52.076991",
-            "synced": true
-        },
-        {
-            "id": 7,
-            "username": "vikket",
-            "score": 0,
-            "timer": 6.874,
-            "game_state": 2,
-            "date": "2026-05-11T13:45:05.907476",
+            "date": "2026-05-11T13:58:16.084118",
             "synced": false
         }
     ],
-    "next_score_id": 8
+    "next_score_id": 4
 }
