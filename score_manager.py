@@ -1,5 +1,7 @@
 import threading
 import utils.db_manager as db
+import requests
+from config.constants import SERVER_URL
 
 _remote_cache: list = []
 _cache_lock = threading.Lock()
@@ -12,9 +14,6 @@ def add_new_score(username: str, score: int, elapsed_time: float, game_state: in
 
 
 def _push_score_async(username: str, score_id: int, score: int, timer: float):
-    from config.constants import SERVER_URL
-    import requests
-
     def _worker():
         try:
             r = requests.post(
@@ -50,7 +49,7 @@ def get_leaderboard(username: str) -> list:
     seen = set()
     merged = []
     for s in local + remote:
-        key = (s["username"], s["score"], s["timer"])
+        key = (s["username"], s["score"],round(s["timer"], 1))
         if key not in seen:
             seen.add(key)
             merged.append(s)

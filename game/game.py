@@ -10,9 +10,6 @@ from view.auth_render import AuthRender
 import utils.db_manager as db
 import score_manager
 
-STATE_AUTH = 10
-STATE_SYNC = 11
-
 
 class Game:
     def __init__(self):
@@ -124,19 +121,21 @@ class Game:
                 self.current_user = username
                 self._after_auth()
             else:
-                self.auth_error = "Ce pseudo est déjà pris."
+                self.auth_error = "Erreur lors de l'inscription. Pseudo déjà pris ou serveur inaccessible."
         else:
             if db.login_user(username, password):
                 self.current_user = username
                 self._after_auth(from_login=True)
             else:
                 self.auth_error = "Pseudo ou mot de passe incorrect."
-    def _run_sync_screen(self):
-        self.wm.screen.fill((20, 20, 30))
-        self.auth_render.draw_sync()
-        pygame.display.flip()
 
+    def _run_sync_screen(self):
         while True:
+            self.auth_render._update_screen_ref(self.wm.screen)
+            self.wm.screen.fill((20, 20, 30))
+            self.auth_render.draw_sync()
+            pygame.display.flip()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self._terminate()

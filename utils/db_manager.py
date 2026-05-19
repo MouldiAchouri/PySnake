@@ -16,7 +16,7 @@ def init_db():
         _save({"users": {}, "local_scores": [], "next_score_id": 1})
 
 
-def _load() -> dict:
+def _load():
     try:
         with open(JSON_PATH, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -63,6 +63,7 @@ def register_user(username: str, password: str) -> bool:
             json={"username": username, "password_hash": hash_password(password)},
             timeout=5
         )
+        print(f"[register] response: {r.json()}")
         if r.json().get("status") != "success":
             return False
     except Exception as e:
@@ -171,7 +172,6 @@ def get_top_10_local() -> list:
 
 
 def sync_scores_to_server(username: str) -> bool:
-    import requests
     unsynced = get_unsynced_scores(username)
     if not unsynced:
         return True
@@ -210,7 +210,6 @@ def fetch_online_leaderboard(limit: int = 10) -> list:
     return []
 
 def download_scores_from_server(username: str):
-    import requests
     try:
         r = requests.get(f"{SERVER_URL}/scores/{username}", timeout=5)
         if r.status_code == 200:

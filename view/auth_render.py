@@ -95,45 +95,55 @@ class AuthRender:
         pygame.display.flip()
         return btn_rect
 
-    def draw_sync(self):
-        W, H = self._W(), self._H()
+    def draw_sync(self, surface=None):
+        if surface is None:
+            surface = self.screen
+        W, H = surface.get_width(), surface.get_height()
 
         overlay = pygame.Surface((W, H), pygame.SRCALPHA)
         overlay.fill((10, 10, 30, 215))
-        self.screen.blit(overlay, (0, 0))
+        surface.blit(overlay, (0, 0))
 
-        bw = int(W * 0.52)
-        bh = int(H * 0.42)
+        bw = int(W * 0.55)
+        bh = int(H * 0.45)
         bx = (W - bw) // 2
         by = (H - bh) // 2
 
-        pygame.draw.rect(self.screen, (22, 22, 42), (bx, by, bw, bh), border_radius=14)
-        pygame.draw.rect(self.screen, (88, 72, 198), (bx, by, bw, bh), 2, border_radius=14)
+        pygame.draw.rect(surface, (22, 22, 42), (bx, by, bw, bh), border_radius=14)
+        pygame.draw.rect(surface, (88, 72, 198), (bx, by, bw, bh), 2, border_radius=14)
 
-        self._centered("Publier vos scores en ligne ?",
-                       self._font(int(H * 0.048), bold=True),
-                       (218, 212, 255), by + int(bh * 0.18))
+        def centered(text, font, color, y):
+            surf = font.render(text, True, color)
+            surface.blit(surf, surf.get_rect(center=(W // 2, y)))
 
-        self._centered("Vos résultats seront visibles dans le classement mondial.",
-                       self._font(int(H * 0.027)),
-                       (145, 140, 195), by + int(bh * 0.40))
+        def blit_on_rect(text, font, color, rect):
+            surf = font.render(text, True, color)
+            surface.blit(surf, surf.get_rect(center=rect.center))
 
-        self._centered("Ce choix ne sera plus redemandé. si vous souhaitez modifier votre choix, changez le directement dans les paramètres",
-                       self._font(int(H * 0.023)),
-                       (85, 83, 125), by + int(bh * 0.54))
+        centered("Publier vos scores en ligne ?",
+                 self._font(int(H * 0.038), bold=True),
+                 (218, 212, 255), by + int(bh * 0.18))
+
+        centered("Vos résultats seront visibles dans le classement global.",
+                 self._font(int(H * 0.024)),
+                 (145, 140, 195), by + int(bh * 0.40))
+
+        centered("Changer le choix dans les paramètres.",
+                 self._font(int(H * 0.023)),
+                 (85, 83, 125), by + int(bh * 0.54))
 
         btn_h = int(H * 0.062)
         btn_w = int(W * 0.15)
-        gap   = int(W * 0.04)
+        gap = int(W * 0.04)
         btn_y = by + int(bh * 0.70)
 
         oui_rect = pygame.Rect(W // 2 - gap // 2 - btn_w, btn_y, btn_w, btn_h)
-        non_rect = pygame.Rect(W // 2 + gap // 2,          btn_y, btn_w, btn_h)
+        non_rect = pygame.Rect(W // 2 + gap // 2, btn_y, btn_w, btn_h)
 
-        pygame.draw.rect(self.screen, (68, 52, 188), oui_rect, border_radius=8)
-        pygame.draw.rect(self.screen, (48, 48, 62),  non_rect, border_radius=8)
+        pygame.draw.rect(surface, (68, 52, 188), oui_rect, border_radius=8)
+        pygame.draw.rect(surface, (48, 48, 62), non_rect, border_radius=8)
 
-        self._blit_on_rect("[O] Oui", self._font(int(H * 0.034), bold=True),
-                           (208, 198, 255), oui_rect)
-        self._blit_on_rect("[N] Non", self._font(int(H * 0.034), bold=True),
-                           (165, 165, 165), non_rect)
+        blit_on_rect("[O] Oui", self._font(int(H * 0.034), bold=True),
+                     (208, 198, 255), oui_rect)
+        blit_on_rect("[N] Non", self._font(int(H * 0.034), bold=True),
+                     (165, 165, 165), non_rect)

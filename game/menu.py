@@ -25,7 +25,7 @@ class Menu:
             return [TXT_CANCEL, TXT_CONFIRM_QUIT]
         if self.in_options:
             is_full = pygame.display.get_surface().get_flags() & pygame.FULLSCREEN
-            sync_label = "Sync : ON  [désactiver]" if self.sync_enabled else "Sync : OFF [activer]"
+            sync_label = "Sync : ON" if self.sync_enabled else "Sync : OFF"
             return [TXT_WINDOWED if is_full else TXT_FULLSCREEN, sync_label, TXT_BACK]
         return [TXT_RESUME, TXT_RESTART, TXT_OPTIONS, TXT_QUIT]
 

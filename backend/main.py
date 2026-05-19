@@ -23,7 +23,7 @@ class ScoreData(BaseModel):
 
 
 @app.get("/")
-def read_root():
+def connection():
     return {"status": "Online", "message": "PySnake Server"}
 
 
@@ -72,7 +72,7 @@ async def get_user_scores(username: str):
         )
         rows = cur.fetchall()
         return [{"score": r[0], "timer": r[1]} for r in rows]
-    except Exception as e:
+    except Exception:
         return[]
     finally:
         conn.close()
