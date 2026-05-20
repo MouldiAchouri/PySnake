@@ -54,16 +54,3 @@ class WindowManager:
         self.screen.fill((0, 0, 0))
         self.screen.blit(scaled_surf, (pos_x, pos_y))
         pygame.display.flip()
-
-    def get_virtual_mouse_pos(self, real_pos):
-        win_w, win_h = self.screen.get_size()
-        game_size = min(win_w, win_h)
-        pos_x = (win_w - game_size) // 2
-        pos_y = (win_h - game_size) // 2
-
-        try:
-            virtual_x = (real_pos[0] - pos_x) * (WIDTH / game_size)
-            virtual_y = (real_pos[1] - pos_y) * (HEIGHT / game_size)
-            return int(virtual_x), int(virtual_y)
-        except (ZeroDivisionError, TypeError):
-            return 0, 0

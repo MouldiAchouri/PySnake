@@ -12,7 +12,6 @@ It is designed to be both scalable and high performance.
 - IDE: Pycharm ou alternative that support python
 - Virtualization: virtual environment (.venv)
 
-
 **upgrade pip for Linux and MacOS**
 ``` bash
 python -m ensurepip --upgrade
@@ -27,8 +26,7 @@ py -m ensurepip --upgrade
 - Pygame: 2.6.1
 
 # Tool used
-- IDE: Pycharm 2025.2.1.1
-
+- IDE: Pycharm 2026.1
 
 ## Deployment
 
@@ -60,6 +58,15 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 4.
+**Installation of backend dependencies**
+```
+pip install -r backend/requirements.txt
+```
+
+5.
+**Rename .env.example to .env**
+
+6.
 **Launch the game**
 ```bash
 python main.py
@@ -68,23 +75,36 @@ python main.py
 # Directory structure
 
 ```text
+├── backend/
+│   ├── database.py
+│   ├── main.py
+│   └── requirements.txt
 ├── config/
-│   └── constants.py       
+│   └── constants.py
 ├── data/
-│   └── scores.json        
+│   └── user.json
+├── docs/
+│   └── Class_Diagram.puml
 ├── game/
-│   ├── apple.py         
-│   ├── game.py          
-│   ├── menu.py            
-│   └── snake.py           
+│   ├── __init__.py
+│   ├── apple.py
+│   ├── game.py
+│   ├── menu.py
+│   └── snake.py
+├── utils/
+│   └── db_manager.py
 ├── view/
-│   ├── render.py         
-│   ├── state_render.py   
-│   └── window_manager.py  
-├── score_manager.py      
-├── main.py               
-├── .env                  
-└── requirements.txt
+│   ├── auth_render.py
+│   ├── input_box.py
+│   ├── render.py
+│   ├── state_render.py
+│   └── window_manager.py
+├── .env
+├── .env.example
+├── .gitignore
+├── main.py
+├── requirements.txt
+└── score_manager.py
 ```
 
 # Collaboration

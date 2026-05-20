@@ -9,6 +9,11 @@
             "password_hash": "f318dd042fd33818b87afea65bc98c296b673a0fd922a40372e68a8d977798e0",
             "player_uuid": "58d15ec8-ad87-426b-9429-140f2c79597a",
             "online_sync_enabled": true
+        },
+        "Cookie": {
+            "password_hash": "45823eaac0c829b633f393ddf15c042d87fb1f1ce6a7b0a1fd0dc7e4f76126ea",
+            "player_uuid": "83e7c399-f77f-4353-a09d-a39adc0f3175",
+            "online_sync_enabled": true
         }
     },
     "local_scores": [
@@ -200,7 +205,34 @@
             "game_state": 2,
             "date": "2026-05-18T15:25:18.091562",
             "synced": true
+        },
+        {
+            "id": 22,
+            "username": "Cookie",
+            "score": 1,
+            "timer": 70.916,
+            "game_state": 2,
+            "date": "2026-05-20T10:34:24.392176",
+            "synced": true
+        },
+        {
+            "id": 23,
+            "username": "Cookie",
+            "score": 1,
+            "timer": 70.916,
+            "game_state": 2,
+            "date": "2026-05-20T10:35:26.180987",
+            "synced": true
+        },
+        {
+            "id": 24,
+            "username": "Cookie",
+            "score": 1,
+            "timer": 70.916,
+            "game_state": 2,
+            "date": "2026-05-20T10:37:55.493101",
+            "synced": true
         }
     ],
-    "next_score_id": 22
+    "next_score_id": 25
 }

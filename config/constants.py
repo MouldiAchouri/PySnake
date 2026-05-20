@@ -26,11 +26,7 @@ RIGHT = pygame.K_RIGHT
 MENU_TOGGLE = pygame.K_SPACE
 MENU_UP = UP
 MENU_DOWN = DOWN
-MENU_LEFT = LEFT
-MENU_RIGHT = RIGHT
-MENU_EXIT = pygame.K_ESCAPE
 
-STATE_MENU = 0
 STATE_PLAYING = 1
 STATE_LOSE = 2
 STATE_WIN = 3
@@ -46,4 +42,3 @@ TXT_WINDOWED = "Mode Fenêtré"
 TXT_BACK = "Retour"
 TXT_CANCEL = "Annuler"
 TXT_CONFIRM_QUIT = "Quitter le jeu"
-TXT_SYNC = "Synchronisation en ligne"

@@ -11,12 +11,8 @@ class Menu:
         self.confirm_quit = False
         self.sync_enabled = False
 
-        self.overlay = pygame.Surface((WIDTH, HEIGHT))
-        self.overlay.fill((0, 0, 0))
         self.start_ticks = pygame.time.get_ticks()
 
-        self.main_options = options if options else ["Reprendre", "Recommencer", "Option", "Quitter"]
-        self.settings_options = ["Plein Ecran", "Retour"]
         self.selected_index = 0
 
     @property

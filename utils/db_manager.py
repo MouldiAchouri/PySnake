@@ -1,6 +1,5 @@
 import json
 import hashlib
-import uuid
 import requests
 from datetime import datetime
 from pathlib import Path
@@ -72,7 +71,6 @@ def register_user(username: str, password: str) -> bool:
 
     data["users"][username] = {
         "password_hash": hash_password(password),
-        "player_uuid": str(uuid.uuid4()),
     }
     _save(data)
     return True
@@ -94,7 +92,6 @@ def login_user(username: str, password: str) -> bool:
         if r.json().get("status") == "success":
             data["users"][username] = {
                 "password_hash": hash_password(password),
-                "player_uuid": str(uuid.uuid4()),
             }
             _save(data)
             return True
